@@ -1,11 +1,11 @@
-import React, { useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import React, { useEffect } from 'react';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withSequence,
-  Easing,
+    Easing,
+    useAnimatedStyle,
+    useSharedValue,
+    withSequence,
+    withTiming,
 } from 'react-native-reanimated';
 import { FRUITS } from '../constants/GameConstants';
 
@@ -15,8 +15,8 @@ interface RouletteWheelProps {
   onSpinComplete?: () => void;
 }
 
-const { width } = Dimensions.get('window');
-const WHEEL_SIZE = width * 0.8;
+const { width, height } = Dimensions.get('window');
+const WHEEL_SIZE = Math.min(width * 0.5, height * 0.25);
 
 export const RouletteWheel: React.FC<RouletteWheelProps> = ({
   isSpinning,
@@ -105,18 +105,18 @@ const styles = StyleSheet.create({
   },
   fruitContainer: {
     position: 'absolute',
-    right: 20,
+    right: 12,
     top: '50%',
-    transform: [{ translateY: -20 }],
+    transform: [{ translateY: -12 }],
     alignItems: 'center',
   },
   fruitEmoji: {
-    fontSize: 24,
-    marginBottom: 4,
+    fontSize: 16,
+    marginBottom: 2,
   },
   multiplier: {
     color: '#FFF',
-    fontSize: 12,
+    fontSize: 8,
     fontWeight: 'bold',
     textShadowColor: '#000',
     textShadowOffset: { width: 1, height: 1 },
@@ -124,12 +124,12 @@ const styles = StyleSheet.create({
   },
   pointer: {
     position: 'absolute',
-    top: -10,
+    top: -8,
     width: 0,
     height: 0,
-    borderLeftWidth: 15,
-    borderRightWidth: 15,
-    borderBottomWidth: 30,
+    borderLeftWidth: 10,
+    borderRightWidth: 10,
+    borderBottomWidth: 20,
     borderLeftColor: 'transparent',
     borderRightColor: 'transparent',
     borderBottomColor: '#F39C12',
