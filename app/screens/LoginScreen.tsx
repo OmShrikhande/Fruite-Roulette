@@ -1,15 +1,23 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import { useAuthStore } from '../store/useAuthStore';
+import api from '../api/axios';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login, loading, error } = useAuthStore();
+  const { login, loading, error, setLoading, setError } = useAuthStore();
 
-  const handleLogin = () => {
-    // TODO: Call API and update store
-    login('demo-token', { email, id: 'demo-id' });
+  const handleLogin = async () => {
+    try {
+      setLoading(true);
+      const res = await api.post('/auth/login', { email, password });
+      login(res.data.token, res.data.user);
+    } catch (err: any) {
+      setError(err?.response?.data?.message || 'Login failed');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
