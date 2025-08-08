@@ -6,10 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.fruiteroulette.prostar.model.Bet;
 import com.fruiteroulette.prostar.service.BetService;
 import com.fruiteroulette.prostar.service.RoundService;
+import com.fruiteroulette.prostar.service.AuditLogService;
 
 @RestController
 @RequestMapping("/game")
 public class GameController {
+    @Autowired
+    private AuditLogService auditLogService;
     @Autowired
     private RoundService roundService;
     @Autowired
@@ -42,6 +45,7 @@ public class GameController {
         bet.setUserId(1L); // TODO: Get from JWT
         bet.setRoundId("demo-round"); // TODO: Use real round
         betService.save(bet);
+        auditLogService.log("PLACE_BET", "UserId: 1, Fruit: " + request.fruit + ", Amount: " + request.amount);
         return ResponseEntity.ok().body("Bet placed");
     }
 

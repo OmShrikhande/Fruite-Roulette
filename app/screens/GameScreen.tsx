@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Modal, Animated, Vibration } from 'react-native';
+import { Audio } from 'expo-av';
 import { BettingGrid } from '../components/BettingGrid';
 import { RouletteWheel } from '../components/RouletteWheel';
 import { GameButton } from '../components/GameButton';
@@ -16,6 +17,16 @@ const GameScreen = () => {
   const [isSpinning, setIsSpinning] = useState(false);
   const [winningFruit, setWinningFruit] = useState<string | null>(null);
   const [confetti, setConfetti] = useState(false);
+  const [winModalVisible, setWinModalVisible] = useState(false);
+  const playWinSound = async () => {
+    try {
+      const { sound } = await Audio.Sound.createAsync(require('../assets/sounds/win.mp3'));
+      await sound.playAsync();
+    } catch {}
+  };
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
 import api from '../api/axios';
   // Fetch round state
   useEffect(() => {
@@ -59,35 +70,66 @@ import api from '../api/axios';
         title="Place Bet"
         onPress={async () => {
           if (!selectedFruit) return;
+          setLoading(true);
           try {
             await api.post('/game/place-bet', { fruit: selectedFruit, amount: 10 });
             setIsSpinning(true);
-            // Wait for round to end, then fetch result from backend
             setTimeout(async () => {
               try {
                 const res = await api.get('/game/current-round');
-                const winning = res.data.winningFruit || selectedFruit; // Use backend result
+                const winning = res.data.winningFruit || selectedFruit;
                 setWinningFruit(winning);
                 if (winning === selectedFruit) {
                   setConfetti(true);
-                  incrementBalance(10 * 5); // TODO: Use backend multiplier
-                  setTimeout(() => setConfetti(false), 2000);
+                  setWinModalVisible(true);
+                  incrementBalance(10 * 5);
+                  Vibration.vibrate(500);
+                  playWinSound();
+                  setTimeout(() => {
+                    setConfetti(false);
+                    setWinModalVisible(false);
+                  }, 2000);
                 }
                 setIsSpinning(false);
-              } catch {}
+              } catch (err) {
+            setErrorMessage('Failed to fetch result. Please check your connection and try again.');
+            setErrorModalVisible(true);
+              }
+              setLoading(false);
             }, timer * 1000);
           } catch (err) {
-            // handle error
+          setErrorMessage('Failed to place bet. Please check your balance and try again.');
+          setErrorModalVisible(true);
+            setLoading(false);
           }
         }}
         disabled={isSpinning || !selectedFruit || status !== 'betting'}
       />
       <GameButton title="Clear Bets" onPress={clearBets} disabled={isSpinning} />
       <GameButton title="Reset Game" onPress={resetGame} />
-      {confetti && (
-        <Text style={{ fontSize: 40, color: '#FDCB6E', fontWeight: 'bold', textShadowColor: '#636e72', textShadowOffset: { width: 2, height: 2 }, textShadowRadius: 8 }}>
-          🎉 WIN! 🎉
-        </Text>
+      <Modal visible={winModalVisible} transparent animationType="fade">
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.4)' }}>
+          <Animated.View style={{ backgroundColor: '#fff', padding: 32, borderRadius: 24, alignItems: 'center', elevation: 8 }}>
+            <Text style={{ fontSize: 48, color: '#FDCB6E', fontWeight: 'bold', marginBottom: 16 }}>🎉 WIN! 🎉</Text>
+            <Text style={{ fontSize: 20, color: '#636e72' }}>Congratulations! Your balance has increased.</Text>
+          </Animated.View>
+        </View>
+      </Modal>
+      <Modal visible={errorModalVisible} transparent animationType="fade">
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.4)' }}>
+          <Animated.View style={{ backgroundColor: '#fff', padding: 32, borderRadius: 24, alignItems: 'center', elevation: 8 }}>
+            <Text style={{ fontSize: 32, color: '#E17055', fontWeight: 'bold', marginBottom: 16 }}>Error</Text>
+            <Text style={{ fontSize: 18, color: '#636e72' }}>{errorMessage}</Text>
+            <GameButton title="Close" onPress={() => setErrorModalVisible(false)} />
+          </Animated.View>
+        </View>
+      </Modal>
+      {loading && (
+        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(255,255,255,0.7)', justifyContent: 'center', alignItems: 'center', zIndex: 99 }}>
+          <Animated.View style={{ width: 60, height: 60, borderRadius: 30, backgroundColor: '#FDCB6E', justifyContent: 'center', alignItems: 'center', elevation: 8 }}>
+            <Text style={{ fontSize: 32, color: '#fff' }}>⏳</Text>
+          </Animated.View>
+        </View>
       )}
     </View>
   );
