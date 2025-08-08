@@ -11,6 +11,7 @@
 ehthumbs.db
 Thumbs.db
 Desktop.ini
+$RECYCLE.BIN/
 
 # IDE and Editor files
 .vscode/
@@ -23,17 +24,20 @@ Desktop.ini
 .settings/
 *.sublime-project
 *.sublime-workspace
+.atom/
+*.code-workspace
 
 # Logs
-logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
+pnpm-debug.log*
 
 # Runtime data
-pids
+pids/
 *.pid
 *.seed
 *.pid.lock
@@ -41,16 +45,21 @@ pids
 # Coverage directory used by tools like istanbul
 coverage/
 *.lcov
-
-# nyc test coverage
-.nyc_output
+.nyc_output/
 
 # Dependency directories
 node_modules/
 jspm_packages/
+bower_components/
 
-# Optional npm cache directory
+# Package manager files
 .npm
+.yarn/
+.pnp.*
+.yarn-integrity
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 
 # Optional eslint cache
 .eslintcache
@@ -67,38 +76,36 @@ jspm_packages/
 # Output of 'npm pack'
 *.tgz
 
-# Yarn Integrity file
-.yarn-integrity
-
 # dotenv environment variables file
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+!.env.example
 
 # parcel-bundler cache (https://parceljs.org/)
-.cache
-.parcel-cache
+.cache/
+.parcel-cache/
 
 # Next.js build output
-.next
+.next/
+out/
 
 # Nuxt.js build / generate output
-.nuxt
-dist
+.nuxt/
+dist/
 
 # Gatsby files
 .cache/
-public
+public/
 
 # Storybook build outputs
-.out
-.storybook-out
+.out/
+.storybook-out/
+storybook-static/
 
 # Temporary folders
 tmp/
 temp/
+.tmp/
 
 # ===================================
 # REACT NATIVE SPECIFIC
@@ -106,7 +113,7 @@ temp/
 
 # React Native
 # Xcode
-build/
+**/ios/build/
 *.pbxuser
 !default.pbxuser
 *.mode1v3
@@ -115,64 +122,91 @@ build/
 !default.mode2v3
 *.perspectivev3
 !default.perspectivev3
-xcuserdata
+xcuserdata/
 *.xccheckout
 *.moved-aside
-DerivedData
+DerivedData/
 *.hmap
 *.ipa
 *.xcuserstate
-project.xcworkspace
+*.xcworkspace
+!*.xcworkspace/contents.xcworkspacedata
+project.xcworkspace/
 
-# Android/IntelliJ
-build/
-.idea
-.gradle
-local.properties
-*.iml
-*.hprof
-
-# BUCK
-buck-out/
-\.buckd/
+# Android
+**/android/build/
+**/android/app/build/
+**/android/.gradle/
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/local.properties
 *.keystore
 !debug.keystore
+*.hprof
+*.apk
+*.aab
+
+# React Native packager
+.metro-health-check*
+metro.config.js.bak
 
 # Bundle artifacts
 *.jsbundle
+*.bundle
 
 # CocoaPods
-/ios/Pods/
+**/ios/Pods/
+**/ios/Podfile.lock
 
 # Expo
 .expo/
 .expo-shared/
 web-build/
+expo-env.d.ts
 
-# Metro
-.metro-health-check*
+# EAS
+.easignore
 
 # React Native CLI
 .react-native-cli.log
 
 # Flipper
-ios/Flipper-Folly
+**/ios/Flipper-Folly/
+flipper-server-state.json
 
 # Fastlane
-fastlane/report.xml
-fastlane/Preview.html
-fastlane/screenshots
-fastlane/test_output
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots/
+**/fastlane/test_output/
+**/fastlane/readme.md
+
+# BUCK
+buck-out/
+\.buckd/
+*.keystore
+
+# Watchman
+.watchmanconfig
+
+# React Native Debugger
+.vscode/launchReactNative.js
+
+# Hermes
+hermesc
+*.hbc
 
 # ===================================
 # JAVA/SPRING BOOT SPECIFIC
 # ===================================
 
-# Compiled class file
+# Compiled class files
 *.class
 
-# Log file
+# Log files
 *.log
+*.log.*
 
 # BlueJ files
 *.ctxt
@@ -180,7 +214,7 @@ fastlane/test_output
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
-# Package Files
+# Package Files (but keep gradle wrapper jar)
 *.jar
 *.war
 *.nar
@@ -188,9 +222,11 @@ fastlane/test_output
 *.zip
 *.tar.gz
 *.rar
+!gradle-wrapper.jar
 
 # Virtual machine crash logs
 hs_err_pid*
+replay_pid*
 
 # Maven
 target/
@@ -198,42 +234,51 @@ pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
 pom.xml.next
+pom.xml.bak
 release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+.flattened-pom.xml
 
 # Gradle
-.gradle
+.gradle/
 **/build/
 !src/**/build/
 gradle-app.setting
 !gradle-wrapper.jar
 !gradle-wrapper.properties
 .gradletasknamecache
-
-# Spring Boot
-*.jar
-*.war
-*.ear
-*.zip
-*.tar.gz
-*.rar
+gradle/wrapper/gradle-wrapper.properties
 
 # Spring Boot specific
 application-*.properties
 application-*.yml
+application-*.yaml
 !application.properties
 !application.yml
+!application.yaml
+!application-example.*
+
+# Spring Boot DevTools
+.spring-boot-devtools.properties
 
 # H2 Database files
 *.db
 *.trace.db
 *.lock.db
+*.mv.db
 
 # JPA Buddy
 .jpb/
+
+# Spring Boot Actuator
+actuator/
+
+# Lombok
+lombok.config
 
 # Eclipse
 .metadata
@@ -305,22 +350,37 @@ fabric.properties
 # SECURITY & SECRETS
 # ===================================
 
-# API keys and secrets
+# Environment files
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+!.env.example
+!.env.template
+
+# API keys and secrets
 secrets.properties
 application-secrets.properties
 application-secrets.yml
+application-secrets.yaml
+config/secrets.json
+.secrets/
 
-# SSL certificates
+# SSL certificates and keys
 *.pem
 *.key
 *.crt
+*.cer
 *.p12
 *.pfx
+*.jks
+keystore.jks
+
+# OAuth and JWT
+*.jwt
+oauth.json
+
+# Database credentials
+database.properties
+db.properties
 
 # ===================================
 # DEPLOYMENT & BUILD
@@ -328,21 +388,32 @@ application-secrets.yml
 
 # Docker
 .dockerignore
+docker-compose.override.yml
+.docker/
 
 # Kubernetes
 *.yaml.bak
 *.yml.bak
+kustomization.yaml
 
 # Terraform
 *.tfstate
 *.tfstate.*
 .terraform/
+.terraform.lock.hcl
 
 # Build outputs
 build/
 dist/
 out/
 target/
+bin/
+lib/
+
+# CI/CD
+.github/workflows/*.yml.bak
+.gitlab-ci.yml.bak
+.circleci/config.yml.bak
 
 # ===================================
 # TESTING
@@ -353,9 +424,35 @@ test-results/
 coverage/
 *.lcov
 .nyc_output/
+junit.xml
+test-output/
 
 # JUnit
 TEST-*.xml
+surefire-reports/
+
+# Jest
+jest.config.js.bak
+
+# Cypress
+cypress/videos/
+cypress/screenshots/
+cypress/downloads/
+
+# ===================================
+# MOBILE DEVELOPMENT
+# ===================================
+
+# React Native specific testing
+__tests__/coverage/
+e2e/artifacts/
+
+# Android testing
+**/androidTest/
+**/test/
+
+# iOS testing
+**/xcshareddata/xcschemes/
 
 # ===================================
 # MISC
@@ -366,13 +463,14 @@ TEST-*.xml
 *.backup
 *.old
 *.orig
+*.swp
+*.swo
 
 # Archive files
 *.7z
 *.dmg
 *.gz
 *.iso
-*.jar
 *.rar
 *.tar
 *.zip
@@ -382,3 +480,19 @@ TEST-*.xml
 .directory
 .Trash-*
 .nfs*
+
+# Lock files (keep some, ignore others)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+!gradle-wrapper.properties
+
+# Documentation build
+docs/build/
+site/
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+.temp/
