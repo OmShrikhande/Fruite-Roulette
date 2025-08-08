@@ -5,16 +5,33 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.fruiteroulette.prostar.model.Bet;
 import com.fruiteroulette.prostar.service.BetService;
+import com.fruiteroulette.prostar.service.RoundService;
 
 @RestController
 @RequestMapping("/game")
 public class GameController {
     @Autowired
+    private RoundService roundService;
+    @Autowired
     private BetService betService;
     @GetMapping("/current-round")
     public ResponseEntity<?> getCurrentRound() {
-        // TODO: Return current round state
-        return ResponseEntity.ok().body("Current round (stub)");
+        return ResponseEntity.ok().body(new RoundResponse(
+            roundService.getRoundId(),
+            roundService.getTimer(),
+            roundService.isBetsOpen()
+        ));
+    }
+
+    public static class RoundResponse {
+        public String roundId;
+        public int timer;
+        public boolean betsOpen;
+        public RoundResponse(String roundId, int timer, boolean betsOpen) {
+            this.roundId = roundId;
+            this.timer = timer;
+            this.betsOpen = betsOpen;
+        }
     }
 
     @PostMapping("/place-bet")

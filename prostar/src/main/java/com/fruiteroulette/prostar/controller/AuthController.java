@@ -5,10 +5,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.fruiteroulette.prostar.model.User;
 import com.fruiteroulette.prostar.service.UserService;
+import com.fruiteroulette.prostar.security.JwtUtil;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+    @Autowired
+    private JwtUtil jwtUtil;
     @Autowired
     private UserService userService;
     @PostMapping("/login")
@@ -17,8 +20,19 @@ public class AuthController {
         if (userOpt.isEmpty() || !userOpt.get().getPassword().equals(request.password)) {
             return ResponseEntity.status(401).body("Invalid credentials");
         }
-        // TODO: Generate JWT token
-        return ResponseEntity.ok().body("Login successful");
+        String token = jwtUtil.generateToken(request.email);
+        return ResponseEntity.ok().body(new LoginResponse(token, userOpt.get().getEmail(), userOpt.get().getId()));
+    }
+
+    public static class LoginResponse {
+        public String token;
+        public String email;
+        public Long id;
+        public LoginResponse(String token, String email, Long id) {
+            this.token = token;
+            this.email = email;
+            this.id = id;
+        }
     }
 
     @PostMapping("/signup")
