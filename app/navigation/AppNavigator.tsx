@@ -1,0 +1,26 @@
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import LoginScreen from '../screens/LoginScreen';
+import SignupScreen from '../screens/SignupScreen';
+import GameScreen from '../screens/GameScreen';
+import ResultsScreen from '../screens/ResultsScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+
+const Tab = createBottomTabNavigator();
+
+const AppNavigator = () => {
+  return (
+    <NavigationContainer>
+      <Tab.Navigator initialRouteName="Game">
+        <Tab.Screen name="Game" component={GameScreen} />
+        <Tab.Screen name="Results" component={ResultsScreen} />
+        <Tab.Screen name="Profile" component={ProfileScreen} />
+        <Tab.Screen name="Login" component={LoginScreen} />
+        <Tab.Screen name="Signup" component={SignupScreen} />
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
+};
+
+export default AppNavigator;
