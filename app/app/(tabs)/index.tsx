@@ -1,75 +1,169 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  StatusBar,
+  Dimensions,
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { GameButton } from '../../components/GameButton';
+import { Ionicons } from '@expo/vector-icons';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+const { width, height } = Dimensions.get('window');
 
 export default function HomeScreen() {
+  const [balance] = useState(10000);
+  const [gems] = useState(50);
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" />
+      <LinearGradient
+        colors={['#667eea', '#764ba2']}
+        style={styles.background}
+      >
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.balanceContainer}>
+            <View style={styles.balanceItem}>
+              <Text style={styles.balanceLabel}>Balance</Text>
+              <Text style={styles.balanceValue}>${balance.toLocaleString()}</Text>
+            </View>
+            <View style={styles.balanceItem}>
+              <Text style={styles.balanceLabel}>Gems</Text>
+              <Text style={styles.balanceValue}>{gems}</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Logo */}
+        <View style={styles.logoContainer}>
+          <Text style={styles.logoText}>🍎 FRUITS</Text>
+          <Text style={styles.logoSubtext}>ROULETTE</Text>
+        </View>
+
+        {/* Floating Fruits Animation */}
+        <View style={styles.floatingFruits}>
+          <Text style={[styles.floatingFruit, { top: '20%', left: '10%' }]}>🍒</Text>
+          <Text style={[styles.floatingFruit, { top: '30%', right: '15%' }]}>🍌</Text>
+          <Text style={[styles.floatingFruit, { top: '50%', left: '5%' }]}>🍇</Text>
+          <Text style={[styles.floatingFruit, { top: '60%', right: '10%' }]}>🍉</Text>
+        </View>
+
+        {/* Main Menu */}
+        <View style={styles.menuContainer}>
+          <GameButton
+            title="🎰 PLAY NOW"
+            onPress={() => {}}
+            variant="success"
+            size="large"
+          />
+          
+          <View style={styles.secondaryButtons}>
+            <GameButton
+              title="📚 How to Play"
+              onPress={() => {}}
+              variant="secondary"
+              size="medium"
+            />
+            <GameButton
+              title="🏆 Leaderboard"
+              onPress={() => {}}
+              variant="primary"
+              size="medium"
+            />
+          </View>
+        </View>
+
+        {/* Bottom Icons */}
+        <View style={styles.bottomIcons}>
+          <Ionicons name="settings" size={24} color="#FFF" />
+        </View>
+      </LinearGradient>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  container: {
+    flex: 1,
+  },
+  background: {
+    flex: 1,
+    paddingHorizontal: 20,
+  },
+  header: {
+    paddingTop: 20,
+    alignItems: 'flex-end',
+  },
+  balanceContainer: {
     flexDirection: 'row',
+    gap: 15,
+  },
+  balanceItem: {
     alignItems: 'center',
-    gap: 8,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 20,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  balanceLabel: {
+    color: '#FFF',
+    fontSize: 12,
+    opacity: 0.8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
+  balanceValue: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginTop: height * 0.15,
+    marginBottom: 40,
+  },
+  logoText: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: '#FFF',
+    textShadowColor: '#000',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 8,
+  },
+  logoSubtext: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#F39C12',
+    letterSpacing: 4,
+    textShadowColor: '#000',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 4,
+  },
+  floatingFruits: {
     position: 'absolute',
+    width: '100%',
+    height: '100%',
+  },
+  floatingFruit: {
+    position: 'absolute',
+    fontSize: 30,
+    opacity: 0.3,
+  },
+  menuContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 20,
+  },
+  secondaryButtons: {
+    flexDirection: 'row',
+    gap: 15,
+    marginTop: 10,
+  },
+  bottomIcons: {
+    alignItems: 'center',
+    paddingBottom: 30,
   },
 });
