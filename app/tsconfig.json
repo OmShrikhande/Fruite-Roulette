@@ -7,6 +7,8 @@
         "./*"
       ]
     }
+    ,"jsx": "react-native"
+    ,"esModuleInterop": true
   },
   "include": [
     "**/*.ts",
