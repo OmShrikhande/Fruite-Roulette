@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { BettingGrid } from '../components/BettingGrid';
 import { RouletteWheel } from '../components/RouletteWheel';
@@ -9,11 +9,30 @@ import { useBetStore } from '../store/useBetStore';
 import { useBalanceStore } from '../store/useBalanceStore';
 
 const GameScreen = () => {
-  const { roundId, timer, winningFruit, status, setRound, setWinningFruit, setTimer, setStatus, resetGame } = useGameStore();
+  const { roundId, timer, status, setRound, setTimer, setStatus, resetGame } = useGameStore();
   const { bets, totalBet, placeBet, clearBets } = useBetStore();
-  const { balance, setBalance } = useBalanceStore();
-  const [selectedFruit, setSelectedFruit] = React.useState<string | null>(null);
-  const [isSpinning, setIsSpinning] = React.useState(false);
+  const { balance, incrementBalance } = useBalanceStore();
+  const [selectedFruit, setSelectedFruit] = useState<string | null>(null);
+  const [isSpinning, setIsSpinning] = useState(false);
+  const [winningFruit, setWinningFruit] = useState<string | null>(null);
+  const [confetti, setConfetti] = useState(false);
+import api from '../api/axios';
+  // Fetch round state
+  useEffect(() => {
+    const fetchRound = async () => {
+      try {
+        const res = await api.get('/game/current-round');
+        setRound(res.data.roundId, res.data.timer, res.data.betsOpen ? 'betting' : 'spinning');
+        setTimer(res.data.timer);
+        setStatus(res.data.betsOpen ? 'betting' : 'spinning');
+      } catch (err) {
+        // handle error
+      }
+    };
+    fetchRound();
+    const interval = setInterval(fetchRound, 1000);
+    return () => clearInterval(interval);
+  }, [setRound, setTimer, setStatus]);
 
   return (
     <View style={styles.container}>
@@ -36,9 +55,30 @@ const GameScreen = () => {
         }}
       />
 
-      <GameButton title="Spin" onPress={() => setIsSpinning(true)} disabled={isSpinning || !selectedFruit} />
+      <GameButton
+        title="Place Bet"
+        onPress={async () => {
+          if (!selectedFruit) return;
+          try {
+            await api.post('/game/place-bet', { fruit: selectedFruit, amount: 10 });
+            setIsSpinning(true);
+            setTimeout(() => {
+              // Simulate win
+              setWinningFruit(selectedFruit);
+              setConfetti(true);
+              incrementBalance(10 * 5); // Demo multiplier
+              setTimeout(() => setConfetti(false), 2000);
+              setIsSpinning(false);
+            }, timer * 1000);
+          } catch (err) {
+            // handle error
+          }
+        }}
+        disabled={isSpinning || !selectedFruit || status !== 'betting'}
+      />
       <GameButton title="Clear Bets" onPress={clearBets} disabled={isSpinning} />
       <GameButton title="Reset Game" onPress={resetGame} />
+      {confetti && <Text style={{ fontSize: 32, color: '#F39C12' }}>🎉 WIN! 🎉</Text>}
     </View>
   );
 };
