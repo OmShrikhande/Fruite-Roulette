@@ -62,13 +62,19 @@ import api from '../api/axios';
           try {
             await api.post('/game/place-bet', { fruit: selectedFruit, amount: 10 });
             setIsSpinning(true);
-            setTimeout(() => {
-              // Simulate win
-              setWinningFruit(selectedFruit);
-              setConfetti(true);
-              incrementBalance(10 * 5); // Demo multiplier
-              setTimeout(() => setConfetti(false), 2000);
-              setIsSpinning(false);
+            // Wait for round to end, then fetch result from backend
+            setTimeout(async () => {
+              try {
+                const res = await api.get('/game/current-round');
+                const winning = res.data.winningFruit || selectedFruit; // Use backend result
+                setWinningFruit(winning);
+                if (winning === selectedFruit) {
+                  setConfetti(true);
+                  incrementBalance(10 * 5); // TODO: Use backend multiplier
+                  setTimeout(() => setConfetti(false), 2000);
+                }
+                setIsSpinning(false);
+              } catch {}
             }, timer * 1000);
           } catch (err) {
             // handle error
@@ -78,7 +84,11 @@ import api from '../api/axios';
       />
       <GameButton title="Clear Bets" onPress={clearBets} disabled={isSpinning} />
       <GameButton title="Reset Game" onPress={resetGame} />
-      {confetti && <Text style={{ fontSize: 32, color: '#F39C12' }}>🎉 WIN! 🎉</Text>}
+      {confetti && (
+        <Text style={{ fontSize: 40, color: '#FDCB6E', fontWeight: 'bold', textShadowColor: '#636e72', textShadowOffset: { width: 2, height: 2 }, textShadowRadius: 8 }}>
+          🎉 WIN! 🎉
+        </Text>
+      )}
     </View>
   );
 };
