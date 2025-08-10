@@ -9,7 +9,7 @@ interface ChipSelectorProps {
 
 export const ChipSelector: React.FC<ChipSelectorProps> = ({
   selectedChip,
-  onSelectChip,
+  onSelectChip
 }) => {
   const formatChipValue = (value: number) => {
     if (value >= 1000) {
@@ -19,63 +19,127 @@ export const ChipSelector: React.FC<ChipSelectorProps> = ({
   };
 
   return (
-    <View style={styles.container}>
-      {CHIP_VALUES.map((value) => (
-        <TouchableOpacity
-          key={value}
-          style={[
-            styles.chip,
-            selectedChip === value && styles.selectedChip,
-          ]}
-          onPress={() => onSelectChip(value)}
-          activeOpacity={0.8}
-        >
-          <Text style={[
-            styles.chipText,
-            selectedChip === value && styles.selectedChipText,
-          ]}>
-            {formatChipValue(value)}
-          </Text>
-        </TouchableOpacity>
-      ))}
+    <View style={styles.panelContainer}>
+      {/* Spin/refresh icon */}
+      <TouchableOpacity style={styles.spinIcon}>
+        <Text style={styles.iconText}>🔄</Text>
+      </TouchableOpacity>
+      {/* Left arrow */}
+      <TouchableOpacity style={styles.arrowIcon}>
+        <Text style={styles.iconText}>◀️</Text>
+      </TouchableOpacity>
+      {/* Help icon */}
+      <TouchableOpacity style={styles.helpIcon}>
+        <Text style={styles.iconText}>❓</Text>
+      </TouchableOpacity>
+      {/* Chips */}
+      <View style={styles.chipsRow}>
+        {CHIP_VALUES.map((value, idx) => {
+          let chipColor = {};
+          if (value === 10) chipColor = { backgroundColor: '#B0B0B0' };
+          if (value === 100) chipColor = { backgroundColor: '#FF9800' };
+          if (value === 1000) chipColor = { backgroundColor: '#2196F3' };
+          if (value === 5000) chipColor = { backgroundColor: '#43A047' };
+          if (value === 50000) chipColor = { backgroundColor: '#E53935' };
+          return (
+            <TouchableOpacity
+              key={value}
+              style={[styles.chip, chipColor, value === 1000 && selectedChip === value ? styles.chipGlow : null]}
+              onPress={() => onSelectChip(value)}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.chipText}>{formatChipValue(value)}</Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+      {/* Right arrow */}
+      <TouchableOpacity style={styles.arrowIcon}>
+        <Text style={styles.iconText}>▶️</Text>
+      </TouchableOpacity>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: {
+  panelContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingHorizontal: 15,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#174A7E',
+    paddingHorizontal: 8,
     paddingVertical: 8,
-    backgroundColor: 'rgba(0,0,0,0.3)',
+    borderRadius: 16,
+    marginTop: 8,
+    marginBottom: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  spinIcon: {
+    marginRight: 8,
+  },
+  arrowIcon: {
+    marginHorizontal: 4,
+  },
+  helpIcon: {
+    marginHorizontal: 4,
+  },
+  iconText: {
+    fontSize: 22,
+    color: '#FFF',
+    fontWeight: 'bold',
+  },
+  chipsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
   },
   chip: {
-    width: 35,
-    height: 35,
-    borderRadius: 17.5,
-    backgroundColor: '#2D3436',
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     justifyContent: 'center',
     alignItems: 'center',
+    marginHorizontal: 2,
     borderWidth: 2,
-    borderColor: '#F39C12',
+    borderColor: '#FFF',
     elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
   },
-  selectedChip: {
-    backgroundColor: '#F39C12',
-    borderColor: '#FFF',
-    transform: [{ scale: 1.1 }],
+  chipGray: {
+    backgroundColor: '#B0B0B0',
+  },
+  chipOrange: {
+    backgroundColor: '#FF9800',
+  },
+  chipBlue: {
+    backgroundColor: '#2196F3',
+  },
+  chipGreen: {
+    backgroundColor: '#43A047',
+  },
+  chipRed: {
+    backgroundColor: '#E53935',
+  },
+  chipGlow: {
+    shadowColor: '#00BFFF',
+    shadowOpacity: 0.8,
+    shadowRadius: 12,
+    borderColor: '#00BFFF',
   },
   chipText: {
-    color: '#F39C12',
-    fontSize: 10,
-    fontWeight: 'bold',
-  },
-  selectedChipText: {
     color: '#FFF',
+    fontSize: 14,
+    fontWeight: 'bold',
+    textShadowColor: 'rgba(0,0,0,0.5)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
 });
