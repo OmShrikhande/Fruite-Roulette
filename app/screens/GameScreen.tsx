@@ -8,6 +8,7 @@ import { FRUITS } from '../constants/GameConstants';
 import { useGameStore } from '../store/useGameStore';
 import { useBetStore } from '../store/useBetStore';
 import { useBalanceStore } from '../store/useBalanceStore';
+import api from '../api/axios';
 
 const GameScreen = () => {
   const { roundId, timer, status, setRound, setTimer, setStatus, resetGame } = useGameStore();
@@ -27,7 +28,6 @@ const GameScreen = () => {
   const [errorModalVisible, setErrorModalVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
-import api from '../api/axios';
   // Fetch round state
   useEffect(() => {
     const fetchRound = async () => {
@@ -45,68 +45,83 @@ import api from '../api/axios';
     return () => clearInterval(interval);
   }, [setRound, setTimer, setStatus]);
 
+  const handleSpin = async () => {
+    if (!selectedFruit || isSpinning || status !== 'betting') return;
+    
+    setLoading(true);
+    setIsSpinning(true);
+    
+    try {
+      // Simulate API call for placing bet
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Simulate getting result after timer
+      setTimeout(async () => {
+        try {
+          // Simulate getting winning result
+          const winning = FRUITS[Math.floor(Math.random() * FRUITS.length)].name;
+          setWinningFruit(winning);
+          
+          if (winning === selectedFruit) {
+            setConfetti(true);
+            setWinModalVisible(true);
+            incrementBalance(10 * 5);
+            Vibration.vibrate(500);
+            playWinSound();
+            setTimeout(() => {
+              setConfetti(false);
+              setWinModalVisible(false);
+            }, 2000);
+          }
+          setIsSpinning(false);
+        } catch (err) {
+          setErrorMessage('Failed to fetch result. Please check your connection and try again.');
+          setErrorModalVisible(true);
+        }
+        setLoading(false);
+      }, timer * 1000);
+    } catch (err) {
+      setErrorMessage('Failed to place bet. Please check your balance and try again.');
+      setErrorModalVisible(true);
+      setLoading(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Fruits Roulette</Text>
-      <Text>Round: {roundId}</Text>
-      <Text>Timer: {timer}</Text>
-      <Text>Status: {status}</Text>
-      <Text>Winning Fruit: {winningFruit || '-'} </Text>
-      <Text>Balance: {balance}</Text>
-      <Text>Total Bet: {totalBet}</Text>
+      {/* Top HUD Bar */}
+      <View style={styles.hudBar}>
+        <Text style={styles.title}>Balance: {balance}</Text>
+        <Text style={styles.title}>Timer: {timer}</Text>
+      </View>
 
-      <RouletteWheel isSpinning={isSpinning} result={selectedFruit ? FRUITS.findIndex(f => f.name === selectedFruit) : undefined} onSpinComplete={() => setIsSpinning(false)} />
+      {/* Main Game Board */}
+      <View style={styles.boardContainer}>
+        <RouletteWheel
+          isSpinning={isSpinning}
+          result={selectedFruit ? FRUITS.findIndex(f => f.name === selectedFruit) : undefined}
+          onSpinComplete={() => setIsSpinning(false)}
+        />
+        <BettingGrid
+          bets={bets}
+          selectedChip={10}
+          onPlaceBet={(fruitName) => {
+            setSelectedFruit(fruitName);
+            placeBet({ fruit: fruitName, amount: 10 });
+          }}
+        />
+      </View>
 
-      <BettingGrid
-        bets={bets}
-        selectedChip={10}
-        onPlaceBet={(fruitName) => {
-          setSelectedFruit(fruitName);
-          placeBet({ fruit: fruitName, amount: 10 });
-        }}
-      />
-
-      <GameButton
-        title="Place Bet"
-        onPress={async () => {
-          if (!selectedFruit) return;
-          setLoading(true);
-          try {
-            await api.post('/game/place-bet', { fruit: selectedFruit, amount: 10 });
-            setIsSpinning(true);
-            setTimeout(async () => {
-              try {
-                const res = await api.get('/game/current-round');
-                const winning = res.data.winningFruit || selectedFruit;
-                setWinningFruit(winning);
-                if (winning === selectedFruit) {
-                  setConfetti(true);
-                  setWinModalVisible(true);
-                  incrementBalance(10 * 5);
-                  Vibration.vibrate(500);
-                  playWinSound();
-                  setTimeout(() => {
-                    setConfetti(false);
-                    setWinModalVisible(false);
-                  }, 2000);
-                }
-                setIsSpinning(false);
-              } catch (err) {
-            setErrorMessage('Failed to fetch result. Please check your connection and try again.');
-            setErrorModalVisible(true);
-              }
-              setLoading(false);
-            }, timer * 1000);
-          } catch (err) {
-          setErrorMessage('Failed to place bet. Please check your balance and try again.');
-          setErrorModalVisible(true);
-            setLoading(false);
-          }
-        }}
-        disabled={isSpinning || !selectedFruit || status !== 'betting'}
-      />
-      <GameButton title="Clear Bets" onPress={clearBets} disabled={isSpinning} />
-      <GameButton title="Reset Game" onPress={resetGame} />
+      {/* Bottom Controls */}
+      <View style={styles.controlsContainer}>
+        <GameButton 
+          title="SPIN" 
+          onPress={handleSpin}
+          disabled={isSpinning || !selectedFruit || status !== 'betting'}
+        />
+        <GameButton title="Clear Bets" onPress={clearBets} disabled={isSpinning} />
+        <GameButton title="Reset Game" onPress={resetGame} />
+      </View>
       <Modal visible={winModalVisible} transparent animationType="fade">
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.4)' }}>
           <Animated.View style={{ backgroundColor: '#fff', padding: 32, borderRadius: 24, alignItems: 'center', elevation: 8 }}>
@@ -136,8 +151,36 @@ import api from '../api/axios';
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16 },
-  title: { fontSize: 24, marginBottom: 16 },
+  container: { 
+    flex: 1, 
+    backgroundColor: '#0a3d0a',
+  },
+  hudBar: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  },
+  title: { 
+    fontSize: 16, 
+    color: '#FFF',
+    fontWeight: 'bold',
+  },
+  boardContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  controlsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  },
 });
 
 export default GameScreen;

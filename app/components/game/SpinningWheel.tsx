@@ -11,33 +11,46 @@ import Animated, {
   withRepeat
 } from 'react-native-reanimated';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 interface SpinningWheelProps {
   isSpinning: boolean;
   result?: number;
   onSpinComplete?: () => void;
+  timer: number;
+  bets: { [key: string]: number };
 }
 
+// Exact fruit sequence and multipliers as per reference image
 const WHEEL_SEGMENTS = [
-  { fruit: '🍎', color: '#DC143C', multiplier: 18 },
-  { fruit: '🍇', color: '#8A2BE2', multiplier: 10 },
-  { fruit: '🍒', color: '#FF1493', multiplier: 25 },
-  { fruit: '🥝', color: '#2E8B57', multiplier: 38 },
-  { fruit: '🍊', color: '#FF6347', multiplier: 28 },
-  { fruit: '🍓', color: '#FF69B4', multiplier: 15 },
-  { fruit: '🍌', color: '#FFD700', multiplier: 5 },
-  { fruit: '🍉', color: '#32CD32', multiplier: 12 },
+  { fruit: '🍇', color: '#8A2BE2', multiplier: 10, name: 'Grape' },
+  { fruit: '🍌', color: '#FFD700', multiplier: 5, name: 'Banana' },
+  { fruit: '🍎', color: '#DC143C', multiplier: 18, name: 'Apple' },
+  { fruit: '🍉', color: '#32CD32', multiplier: 12, name: 'Watermelon' },
+  { fruit: '🍊', color: '#FF6347', multiplier: 28, name: 'Orange' },
+  { fruit: '🍋', color: '#F1C40F', multiplier: 10, name: 'Lemon' },
+  { fruit: '🍓', color: '#FF69B4', multiplier: 15, name: 'Strawberry' },
+  { fruit: '🍒', color: '#FF1493', multiplier: 38, name: 'Cherry' },
+];
+
+// Chip stack configuration for each slot
+const CHIP_STACK = [
+  { value: '10', color: '#FFF', borderColor: '#000' },
+  { value: '100', color: '#FF8C00', borderColor: '#FFF' },
+  { value: '1K', color: '#4169E1', borderColor: '#FFF' },
+  { value: '5K', color: '#32CD32', borderColor: '#FFF' },
+  { value: '50K', color: '#DC143C', borderColor: '#FFF' },
 ];
 
 export const SpinningWheel: React.FC<SpinningWheelProps> = ({
   isSpinning,
   result,
   onSpinComplete,
+  timer,
+  bets,
 }) => {
   const rotation = useSharedValue(0);
   const glowAnimation = useSharedValue(0);
-  const WHEEL_SIZE = Math.min(width * 0.35, 200);
   const sectorAngle = 360 / WHEEL_SEGMENTS.length;
 
   React.useEffect(() => {
@@ -61,73 +74,116 @@ export const SpinningWheel: React.FC<SpinningWheelProps> = ({
         })
       );
     }
-  }, [isSpinning, result]);
-
-  const wheelAnimatedStyle = useAnimatedStyle(() => {
-    const glow = interpolate(glowAnimation.value, [0, 1], [0.3, 0.8]);
-    return {
-      transform: [{ rotate: `${rotation.value}deg` }],
-      shadowOpacity: isSpinning ? glow : 0.3,
-    };
-  });
+  }, [isSpinning, result, rotation, sectorAngle, onSpinComplete]);
 
   const pointerAnimatedStyle = useAnimatedStyle(() => {
-    const bounce = isSpinning ? interpolate(glowAnimation.value, [0, 1], [1, 1.2]) : 1;
+    const glowOpacity = interpolate(glowAnimation.value, [0, 1], [0.3, 1]);
     return {
-      transform: [{ scale: bounce }],
+      opacity: glowOpacity,
     };
   });
+
+  // Calculate positions for outer fruit icons
+  const getOuterFruitPosition = (index: number) => {
+    const angle = (index * sectorAngle - 90) * (Math.PI / 180);
+    const radius = width * 0.32;
+    const x = Math.cos(angle) * radius;
+    const y = Math.sin(angle) * radius;
+    return { x, y };
+  };
+
+  // Calculate positions for betting slots in oval arrangement
+  const getSlotPosition = (index: number) => {
+    const angle = (index * sectorAngle - 90) * (Math.PI / 180);
+    const radius = width * 0.18;
+    const x = Math.cos(angle) * radius;
+    const y = Math.sin(angle) * radius;
+    return { x, y };
+  };
 
   return (
     <View style={styles.container}>
-      {/* Outer Glow Ring */}
-      <View style={[styles.glowRing, isSpinning && styles.spinningGlow]} />
+      {/* Outer oval with repeating fruit icons */}
+      <View style={styles.outerOval}>
+        {WHEEL_SEGMENTS.map((segment, idx) => {
+          const position = getOuterFruitPosition(idx);
+          return (
+            <View 
+              key={idx} 
+              style={[
+                styles.fruitIconWrapper,
+                {
+                  left: width * 0.4 + position.x - 15,
+                  top: width * 0.3 + position.y - 15,
+                }
+              ]}
+            >
+              <Text style={styles.fruitIcon}>{segment.fruit}</Text>
+            </View>
+          );
+        })}
+      </View>
       
-      {/* Main Wheel */}
-      <Animated.View style={[styles.wheel, wheelAnimatedStyle]}>
-        <LinearGradient
-          colors={['rgba(212, 175, 55, 0.3)', 'rgba(212, 175, 55, 0.1)']}
-          style={styles.wheelBackground}
-        >
-          {WHEEL_SEGMENTS.map((segment, index) => {
-            const angle = (index * sectorAngle) - 90;
+      {/* Sandy beige oval betting track */}
+      <View style={styles.sandyOval}>
+        {/* 8 fruit slots inside oval */}
+        <View style={styles.slotsContainer}>
+          {WHEEL_SEGMENTS.map((segment, idx) => {
+            const position = getSlotPosition(idx);
+            const betAmount = bets[segment.name] || 0;
             return (
-              <View
-                key={index}
+              <View 
+                key={idx} 
                 style={[
-                  styles.sector,
+                  styles.slotBox,
                   {
-                    transform: [{ rotate: `${angle}deg` }],
-                    backgroundColor: segment.color,
-                  },
+                    left: width * 0.34 + position.x - (width * 0.06),
+                    top: width * 0.24 + position.y - (width * 0.06),
+                  }
                 ]}
               >
-                <LinearGradient
-                  colors={[`${segment.color}CC`, `${segment.color}FF`]}
-                  style={styles.sectorGradient}
-                >
-                  <View style={styles.sectorContent}>
-                    <Text style={styles.fruitEmoji}>{segment.fruit}</Text>
-                    <Text style={styles.multiplier}>x{segment.multiplier}</Text>
-                  </View>
-                </LinearGradient>
+                {/* Large bet amount in yellow/orange */}
+                <Text style={styles.betAmount}>
+                  {betAmount > 0 ? betAmount.toLocaleString() : '70000'}
+                </Text>
+                
+                {/* Stacked poker chips */}
+                <View style={styles.chipStack}>
+                  {CHIP_STACK.map((chip, chipIdx) => (
+                    <View 
+                      key={chipIdx} 
+                      style={[
+                        styles.chip, 
+                        { 
+                          backgroundColor: chip.color,
+                          borderColor: chip.borderColor,
+                        }
+                      ]}
+                    >
+                      <Text style={[
+                        styles.chipText,
+                        chip.color === '#FFF' && { color: '#000' }
+                      ]}>
+                        {chip.value}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+                
+                {/* Multiplier text in yellow at bottom */}
+                <Text style={styles.multiplierText}>X{segment.multiplier}</Text>
               </View>
             );
           })}
-          
-          {/* Center Hub */}
-          <View style={styles.centerHub}>
-            <LinearGradient
-              colors={['#D4AF37', '#FFD700']}
-              style={styles.centerHubGradient}
-            >
-              <Text style={styles.centerText}>🎰</Text>
-            </LinearGradient>
-          </View>
-        </LinearGradient>
-      </Animated.View>
-      
-      {/* Pointer */}
+        </View>
+
+        {/* Center timer (red digital countdown) */}
+        <View style={styles.centerTimer}>
+          <Text style={styles.timerText}>{timer}</Text>
+        </View>
+      </View>
+
+      {/* Spinning pointer */}
       <Animated.View style={[styles.pointer, pointerAnimatedStyle]}>
         <LinearGradient
           colors={['#FFD700', '#FFA500']}
@@ -158,109 +214,151 @@ const styles = StyleSheet.create({
     position: 'relative',
     marginVertical: 20,
   },
-  glowRing: {
-    position: 'absolute',
-    width: Math.min(width * 0.4, 220),
-    height: Math.min(width * 0.4, 220),
-    borderRadius: Math.min(width * 0.2, 110),
-    borderWidth: 2,
-    borderColor: 'rgba(212, 175, 55, 0.3)',
-    shadowColor: '#D4AF37',
-    shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 5,
-  },
-  spinningGlow: {
-    borderColor: '#FFD700',
-    shadowOpacity: 0.8,
-    shadowRadius: 20,
-  },
-  wheel: {
-    width: Math.min(width * 0.35, 200),
-    height: Math.min(width * 0.35, 200),
-    borderRadius: Math.min(width * 0.175, 100),
-    position: 'relative',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
-  },
-  wheelBackground: {
-    width: '100%',
-    height: '100%',
-    borderRadius: width * 0.2,
-    overflow: 'hidden',
-  },
-  sector: {
-    position: 'absolute',
-    width: width * 0.2,
-    height: width * 0.2,
-    top: width * 0.1,
-    left: width * 0.2,
-    transformOrigin: '0 50%',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.3)',
-    overflow: 'hidden',
-  },
-  sectorGradient: {
-    flex: 1,
+  outerOval: {
+    width: width * 0.8,
+    height: width * 0.6,
+    borderRadius: width * 0.3,
+    backgroundColor: '#228B22', // Deep green background
     justifyContent: 'center',
-    alignItems: 'flex-end',
-    paddingRight: 15,
-  },
-  sectorContent: {
     alignItems: 'center',
-  },
-  fruitEmoji: {
-    fontSize: 20,
-    marginBottom: 2,
-  },
-  multiplier: {
-    color: '#FFF',
-    fontSize: 10,
-    fontWeight: 'bold',
-    textShadowColor: 'rgba(0,0,0,0.8)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-  },
-  centerHub: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    width: 50,
-    height: 50,
-    marginTop: -25,
-    marginLeft: -25,
-    borderRadius: 25,
-    overflow: 'hidden',
+    position: 'relative',
+    borderWidth: 4,
+    borderColor: '#1F5F1F',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
   },
-  centerHubGradient: {
-    flex: 1,
+  fruitIconWrapper: {
+    position: 'absolute',
+    width: 30,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  fruitIcon: {
+    fontSize: 20,
+  },
+  sandyOval: {
+    position: 'absolute',
+    width: width * 0.68,
+    height: width * 0.48,
+    borderRadius: width * 0.24,
+    backgroundColor: '#F4A460', // Sandy beige
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 3,
+    borderColor: '#DEB887',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  slotsContainer: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  centerText: {
-    fontSize: 20,
+  slotBox: {
+    position: 'absolute',
+    width: width * 0.12,
+    height: width * 0.12,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#DDD',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  betAmount: {
+    fontSize: 8,
+    fontWeight: 'bold',
+    color: '#FF8C00', // Bright yellow/orange
+    marginBottom: 1,
+    textAlign: 'center',
+  },
+  chipStack: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 1,
+    gap: 1,
+  },
+  chip: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 0.5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 1,
+    elevation: 1,
+  },
+  chipText: {
+    fontSize: 4,
+    fontWeight: 'bold',
+    color: '#FFF',
+    textAlign: 'center',
+  },
+  multiplierText: {
+    fontSize: 6,
+    fontWeight: 'bold',
+    color: '#FFD700', // Yellow
+    marginTop: 1,
+    textAlign: 'center',
+  },
+  centerTimer: {
+    position: 'absolute',
+    top: -15,
+    backgroundColor: '#000',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#FF0000',
+    shadowColor: '#FF0000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 6,
+  },
+  timerText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FF0000', // Red digital countdown
+    fontFamily: 'monospace',
+    textShadowColor: 'rgba(255, 0, 0, 0.5)',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 4,
   },
   pointer: {
     position: 'absolute',
-    top: -15,
+    top: width * 0.05,
     width: 0,
     height: 0,
     zIndex: 10,
   },
   pointerGradient: {
-    width: 30,
-    height: 40,
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
+    width: 20,
+    height: 30,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
     transform: [{ rotate: '180deg' }],
