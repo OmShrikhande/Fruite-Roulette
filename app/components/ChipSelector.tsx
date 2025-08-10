@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { CHIP_VALUES } from '../constants/GameConstants';
 
 interface ChipSelectorProps {
@@ -46,24 +46,24 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
     backgroundColor: 'rgba(0,0,0,0.3)',
   },
   chip: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 35,
+    height: 35,
+    borderRadius: 17.5,
     backgroundColor: '#2D3436',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 3,
+    borderWidth: 2,
     borderColor: '#F39C12',
-    elevation: 5,
+    elevation: 3,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
-    shadowRadius: 8,
+    shadowRadius: 4,
   },
   selectedChip: {
     backgroundColor: '#F39C12',
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
   },
   chipText: {
     color: '#F39C12',
-    fontSize: 12,
+    fontSize: 10,
     fontWeight: 'bold',
   },
   selectedChipText: {

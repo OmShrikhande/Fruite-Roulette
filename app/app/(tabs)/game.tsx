@@ -1,17 +1,17 @@
+import { LinearGradient } from 'expo-linear-gradient';
 import React, { useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  StatusBar,
-  Alert,
+    Alert,
+    SafeAreaView,
+    StatusBar,
+    StyleSheet,
+    Text,
+    View,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { RouletteWheel } from '../../components/RouletteWheel';
 import { BettingGrid } from '../../components/BettingGrid';
 import { ChipSelector } from '../../components/ChipSelector';
 import { GameButton } from '../../components/GameButton';
+import { RouletteWheel } from '../../components/RouletteWheel';
 import { FRUITS } from '../../constants/GameConstants';
 
 export default function GameScreen() {
@@ -159,10 +159,12 @@ const styles = StyleSheet.create({
   },
   background: {
     flex: 1,
+    paddingHorizontal: 10,
   },
   header: {
-    paddingHorizontal: 20,
-    paddingTop: 10,
+    paddingHorizontal: 15,
+    paddingTop: 8,
+    paddingBottom: 5,
   },
   balanceContainer: {
     flexDirection: 'row',
@@ -171,22 +173,24 @@ const styles = StyleSheet.create({
   },
   balanceText: {
     color: '#FFF',
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: 'bold',
   },
   timerText: {
     color: '#F39C12',
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: 'bold',
   },
   wheelContainer: {
     alignItems: 'center',
-    paddingVertical: 20,
+    paddingVertical: 10,
+    flex: 0.4,
+    justifyContent: 'center',
   },
   actionButtons: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
   },
 });

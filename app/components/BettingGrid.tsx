@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { FRUITS } from '../constants/GameConstants';
 
 interface BettingGridProps {
@@ -45,14 +45,14 @@ export const BettingGrid: React.FC<BettingGridProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    padding: 12,
   },
   title: {
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#FFF',
     textAlign: 'center',
-    marginBottom: 15,
+    marginBottom: 8,
   },
   grid: {
     flexDirection: 'row',
@@ -62,11 +62,11 @@ const styles = StyleSheet.create({
   betSlot: {
     width: '23%',
     aspectRatio: 1,
-    borderRadius: 12,
-    padding: 8,
+    borderRadius: 8,
+    padding: 4,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 10,
+    marginBottom: 6,
     elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -79,39 +79,39 @@ const styles = StyleSheet.create({
     borderColor: '#F39C12',
   },
   fruitEmoji: {
-    fontSize: 20,
-    marginBottom: 2,
+    fontSize: 16,
+    marginBottom: 1,
   },
   fruitName: {
     color: '#FFF',
-    fontSize: 10,
+    fontSize: 8,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   multiplier: {
     color: '#FFF',
-    fontSize: 8,
+    fontSize: 6,
     fontWeight: 'bold',
     backgroundColor: 'rgba(0,0,0,0.3)',
-    paddingHorizontal: 4,
+    paddingHorizontal: 2,
     paddingVertical: 1,
-    borderRadius: 8,
-    marginTop: 2,
+    borderRadius: 4,
+    marginTop: 1,
   },
   chipIndicator: {
     position: 'absolute',
-    top: -5,
-    right: -5,
+    top: -3,
+    right: -3,
     backgroundColor: '#F39C12',
-    borderRadius: 12,
-    minWidth: 24,
-    height: 24,
+    borderRadius: 8,
+    minWidth: 16,
+    height: 16,
     justifyContent: 'center',
     alignItems: 'center',
   },
   chipAmount: {
     color: '#FFF',
-    fontSize: 10,
+    fontSize: 8,
     fontWeight: 'bold',
   },
 });

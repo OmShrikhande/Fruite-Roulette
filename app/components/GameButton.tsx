@@ -1,6 +1,6 @@
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import React from 'react';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { COLORS, SPACING } from '../constants/Colors';
 
 interface GameButtonProps {
@@ -62,16 +62,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   small: {
+    height: 32,
+    paddingHorizontal: SPACING.sm,
+  },
+  medium: {
     height: 40,
     paddingHorizontal: SPACING.md,
   },
-  medium: {
-    height: 50,
-    paddingHorizontal: SPACING.lg,
-  },
   large: {
-    height: 60,
-    paddingHorizontal: SPACING.xl,
+    height: 48,
+    paddingHorizontal: SPACING.lg,
   },
   text: {
     color: COLORS.text,
@@ -79,13 +79,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   smallText: {
-    fontSize: 14,
+    fontSize: 12,
   },
   mediumText: {
-    fontSize: 16,
+    fontSize: 14,
   },
   largeText: {
-    fontSize: 18,
+    fontSize: 16,
   },
   disabled: {
     opacity: 0.5,
