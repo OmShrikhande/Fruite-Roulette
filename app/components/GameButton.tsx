@@ -1,6 +1,7 @@
-import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import React from 'react';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { COLORS, SPACING } from '../constants/Colors';
 
 interface GameButtonProps {
   title: string;
@@ -19,11 +20,11 @@ export const GameButton: React.FC<GameButtonProps> = ({
 }) => {
   const getGradientColors = () => {
     switch (variant) {
-      case 'primary': return ['#6C5CE7', '#A29BFE'];
-      case 'secondary': return ['#74B9FF', '#0984E3'];
-      case 'danger': return ['#E17055', '#D63031'];
-      case 'success': return ['#00B894', '#00CEC9'];
-      default: return ['#6C5CE7', '#A29BFE'];
+      case 'primary': return [COLORS.primary, COLORS.secondary];
+      case 'secondary': return [COLORS.accent, COLORS.gold];
+      case 'danger': return [COLORS.danger, '#D63031'];
+      case 'success': return [COLORS.success, '#00CEC9'];
+      default: return [COLORS.primary, COLORS.secondary];
     }
   };
 
@@ -31,7 +32,7 @@ export const GameButton: React.FC<GameButtonProps> = ({
     <TouchableOpacity
       onPress={onPress}
       disabled={disabled}
-      style={[styles.button, styles[size], disabled && styles.disabled]}
+      style={[styles.button, styles[size], disabled && styles.disabled, { marginVertical: SPACING.sm }]}
       activeOpacity={0.8}
     >
       <LinearGradient
@@ -48,43 +49,43 @@ export const GameButton: React.FC<GameButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    borderRadius: 25,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
+    borderRadius: 20,
+    elevation: 3,
+    shadowColor: COLORS.dark,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
   },
   gradient: {
-    borderRadius: 25,
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },
   small: {
-    height: 40,
-    paddingHorizontal: 20,
+    height: 32,
+    paddingHorizontal: SPACING.sm,
   },
   medium: {
-    height: 50,
-    paddingHorizontal: 30,
+    height: 40,
+    paddingHorizontal: SPACING.md,
   },
   large: {
-    height: 60,
-    paddingHorizontal: 40,
+    height: 48,
+    paddingHorizontal: SPACING.lg,
   },
   text: {
-    color: '#FFF',
+    color: COLORS.text,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   smallText: {
-    fontSize: 14,
+    fontSize: 12,
   },
   mediumText: {
-    fontSize: 16,
+    fontSize: 14,
   },
   largeText: {
-    fontSize: 18,
+    fontSize: 16,
   },
   disabled: {
     opacity: 0.5,

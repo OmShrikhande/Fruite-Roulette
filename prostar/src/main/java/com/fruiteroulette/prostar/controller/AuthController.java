@@ -9,7 +9,11 @@ import com.fruiteroulette.prostar.security.JwtUtil;
 
 @RestController
 @RequestMapping("/auth")
+import com.fruiteroulette.prostar.service.AuditLogService;
+
 public class AuthController {
+    @Autowired
+    private AuditLogService auditLogService;
     @Autowired
     private JwtUtil jwtUtil;
     @Autowired
@@ -44,6 +48,7 @@ public class AuthController {
         user.setEmail(request.email);
         user.setPassword(request.password); // TODO: Hash password
         userService.save(user);
+        auditLogService.log("SIGNUP", "Email: " + request.email);
         return ResponseEntity.ok().body("Signup successful");
     }
 

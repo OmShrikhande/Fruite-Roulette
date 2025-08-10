@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useAuthStore } from '../store/useAuthStore';
 
 const api = axios.create({
-  baseURL: 'https://your-backend-url.com', // TODO: Replace with actual backend URL
+  baseURL: 'http://localhost:8080', // Update to your backend address
 });
 
 // JWT Interceptor
