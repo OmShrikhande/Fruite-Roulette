@@ -113,20 +113,21 @@ export const SpinningWheel: React.FC<SpinningWheelProps> = ({
               style={[
                 styles.fruitIconWrapper,
                 {
-                  left: width * 0.4 + position.x - 15,
-                  top: width * 0.3 + position.y - 15,
+                  left: width * 0.4 + position.x - 20,
+                  top: width * 0.3 + position.y - 20,
                 }
               ]}
             >
+              {/* Fruit icon, flat but high-contrast */}
               <Text style={styles.fruitIcon}>{segment.fruit}</Text>
             </View>
           );
         })}
       </View>
-      
-      {/* Sandy beige oval betting track */}
+
+      {/* Sandy beige oval betting track with sand-like texture */}
       <View style={styles.sandyOval}>
-        {/* 8 fruit slots inside oval */}
+        {/* 8 rectangular betting zones in 2 rows of 4 */}
         <View style={styles.slotsContainer}>
           {WHEEL_SEGMENTS.map((segment, idx) => {
             const position = getSlotPosition(idx);
@@ -137,17 +138,19 @@ export const SpinningWheel: React.FC<SpinningWheelProps> = ({
                 style={[
                   styles.slotBox,
                   {
-                    left: width * 0.34 + position.x - (width * 0.06),
-                    top: width * 0.24 + position.y - (width * 0.06),
+                    left: width * 0.34 + position.x - (width * 0.07),
+                    top: width * 0.24 + position.y - (width * 0.07),
                   }
                 ]}
               >
-                {/* Large bet amount in yellow/orange */}
-                <Text style={styles.betAmount}>
-                  {betAmount > 0 ? betAmount.toLocaleString() : '70000'}
-                </Text>
-                
-                {/* Stacked poker chips */}
+                {/* Large bet amount in bold gradient orange/yellow text */}
+                <LinearGradient colors={["#FFA500", "#FFD700"]} style={styles.betAmountGradient}>
+                  <Text style={styles.betAmount}>
+                    {betAmount > 0 ? betAmount.toLocaleString() : '70,000'}
+                  </Text>
+                </LinearGradient>
+
+                {/* Stacked poker chips, high-gloss style */}
                 <View style={styles.chipStack}>
                   {CHIP_STACK.map((chip, chipIdx) => (
                     <View 
@@ -157,27 +160,26 @@ export const SpinningWheel: React.FC<SpinningWheelProps> = ({
                         { 
                           backgroundColor: chip.color,
                           borderColor: chip.borderColor,
+                          shadowColor: '#FFF',
+                          shadowOpacity: 0.7,
+                          shadowRadius: 4,
+                          elevation: 4,
                         }
                       ]}
                     >
-                      <Text style={[
-                        styles.chipText,
-                        chip.color === '#FFF' && { color: '#000' }
-                      ]}>
-                        {chip.value}
-                      </Text>
+                      <Text style={styles.chipText}>{chip.value}</Text>
                     </View>
                   ))}
                 </View>
-                
-                {/* Multiplier text in yellow at bottom */}
+
+                {/* Multiplier value below chips in yellow text with X prefix */}
                 <Text style={styles.multiplierText}>X{segment.multiplier}</Text>
               </View>
             );
           })}
         </View>
 
-        {/* Center timer (red digital countdown) */}
+        {/* Center timer (red segmented digital countdown) */}
         <View style={styles.centerTimer}>
           <Text style={styles.timerText}>{timer}</Text>
         </View>
@@ -190,7 +192,7 @@ export const SpinningWheel: React.FC<SpinningWheelProps> = ({
           style={styles.pointerGradient}
         />
       </Animated.View>
-      
+
       {/* Result Display */}
       {result !== undefined && !isSpinning && (
         <View style={styles.resultDisplay}>
@@ -269,59 +271,80 @@ const styles = StyleSheet.create({
   },
   slotBox: {
     position: 'absolute',
-    width: width * 0.12,
-    height: width * 0.12,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 8,
+    width: width * 0.14,
+    height: width * 0.14,
+    backgroundColor: 'rgba(245, 222, 179, 0.98)', // sandy beige
+    borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#DDD',
+    borderWidth: 2,
+    borderColor: '#DEB887',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 4,
+    margin: 2,
+  },
+  betAmountGradient: {
+    borderRadius: 6,
+    paddingHorizontal: 2,
+    paddingVertical: 1,
+    marginBottom: 2,
   },
   betAmount: {
-    fontSize: 8,
+    fontSize: 14,
     fontWeight: 'bold',
-    color: '#FF8C00', // Bright yellow/orange
-    marginBottom: 1,
+    color: '#FFF',
     textAlign: 'center',
+    textShadowColor: '#FF8C00',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+    letterSpacing: 1,
+    fontFamily: 'monospace',
   },
   chipStack: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 1,
-    gap: 1,
+    marginVertical: 2,
+    gap: 2,
   },
   chip: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 0.5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 1,
-    elevation: 1,
+    borderWidth: 2,
+    borderColor: '#FFF',
+    marginHorizontal: 1,
+    shadowColor: '#FFF',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.7,
+    shadowRadius: 4,
+    elevation: 4,
   },
   chipText: {
-    fontSize: 4,
+    fontSize: 8,
     fontWeight: 'bold',
-    color: '#FFF',
+    color: '#000',
     textAlign: 'center',
+    textShadowColor: 'rgba(0,0,0,0.5)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
+    fontFamily: 'monospace',
   },
   multiplierText: {
-    fontSize: 6,
+    fontSize: 12,
     fontWeight: 'bold',
     color: '#FFD700', // Yellow
-    marginTop: 1,
+    marginTop: 2,
     textAlign: 'center',
+    textShadowColor: '#FF8C00',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+    fontFamily: 'monospace',
   },
   centerTimer: {
     position: 'absolute',

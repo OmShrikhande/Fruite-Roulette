@@ -42,12 +42,8 @@ const FruitsRouletteGameScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-      
-      {/* Background gradient */}
-      <LinearGradient
-        colors={['#1a5f1a', '#0d4d0d', '#0a3d0a']}
-        style={styles.backgroundGradient}
-      />
+      {/* Casino table texture background */}
+      <View style={styles.casinoBackground} />
 
       {/* Top HUD Bar */}
       <View style={styles.hudContainer}>
@@ -82,13 +78,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0a3d0a',
+    position: 'relative',
   },
-  backgroundGradient: {
+  casinoBackground: {
     position: 'absolute',
     left: 0,
     right: 0,
     top: 0,
     bottom: 0,
+    zIndex: 0,
+    backgroundColor: '#174d23',
+    // Simulate casino felt texture with a subtle pattern overlay
+    // If you have an asset, use: backgroundImage: 'url(../assets/images/casino-table-texture.png)'
+    opacity: 1,
   },
   hudContainer: {
     paddingTop: StatusBar.currentHeight || 44,
