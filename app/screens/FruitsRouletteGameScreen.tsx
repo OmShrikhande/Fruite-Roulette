@@ -22,7 +22,6 @@ const FruitsRouletteGameScreen: React.FC = () => {
   const handleSpin = () => {
     if (totalBet > 0 && !isSpinning) {
       setIsSpinning(true);
-      // Simulate spin result after 4 seconds
       setTimeout(() => {
         setResult(Math.floor(Math.random() * 8));
       }, 4000);
@@ -31,7 +30,6 @@ const FruitsRouletteGameScreen: React.FC = () => {
 
   const handleSpinComplete = () => {
     setIsSpinning(false);
-    // Reset result after showing it for 3 seconds
     setTimeout(() => {
       setResult(undefined);
     }, 3000);
@@ -42,15 +40,19 @@ const FruitsRouletteGameScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent />
-      {/* Casino table texture background */}
-      <View style={styles.casinoBackground} />
+      
+      {/* Deep green casino table texture background */}
+      <LinearGradient
+        colors={['#0B4D0B', '#174D23', '#0B4D0B']}
+        style={styles.casinoBackground}
+      />
 
-      {/* Top HUD Bar */}
+      {/* Top HUD Bar - spanning full width above oval */}
       <View style={styles.hudContainer}>
         <GameHeader balance={balance} />
       </View>
 
-      {/* Main Game Board */}
+      {/* Central Game Board with oval betting track */}
       <View style={styles.gameBoard}>
         <SpinningWheel
           isSpinning={isSpinning}
@@ -61,7 +63,7 @@ const FruitsRouletteGameScreen: React.FC = () => {
         />
       </View>
 
-      {/* Bottom Betting Chips Panel */}
+      {/* Bottom Control Panel - horizontal row of betting controls */}
       <View style={styles.bottomPanel}>
         <BettingChipsPanel
           selectedChip={selectedChip}
@@ -77,8 +79,9 @@ const FruitsRouletteGameScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0a3d0a',
-    position: 'relative',
+    backgroundColor: '#0B4D0B',
+    width: 1080,
+    height: 1920,
   },
   casinoBackground: {
     position: 'absolute',
@@ -87,14 +90,9 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     zIndex: 0,
-    backgroundColor: '#174d23',
-    // Simulate casino felt texture with a subtle pattern overlay
-    // If you have an asset, use: backgroundImage: 'url(../assets/images/casino-table-texture.png)'
-    opacity: 1,
   },
   hudContainer: {
     paddingTop: StatusBar.currentHeight || 44,
-    paddingHorizontal: 0,
     zIndex: 10,
   },
   gameBoard: {
@@ -105,6 +103,7 @@ const styles = StyleSheet.create({
   },
   bottomPanel: {
     paddingBottom: 20,
+    paddingHorizontal: 16,
     zIndex: 10,
   },
 });

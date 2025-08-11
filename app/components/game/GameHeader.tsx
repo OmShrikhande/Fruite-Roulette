@@ -9,7 +9,7 @@ interface GameHeaderProps {
 export const GameHeader: React.FC<GameHeaderProps> = ({ balance }) => {
   return (
     <View style={styles.hudBar}>
-      {/* Blue diamond icon with player balance */}
+      {/* Left: Blue diamond icon with player balance */}
       <View style={styles.balanceSection}>
         <LinearGradient
           colors={['#4A90E2', '#357ABD']}
@@ -20,18 +20,18 @@ export const GameHeader: React.FC<GameHeaderProps> = ({ balance }) => {
         </LinearGradient>
       </View>
       
-      {/* Four icons: coin/balance, trophy, clock/history, sound control */}
+      {/* Center-left: Coin stack icon, Center: Trophy icon, Center-right: Clock icon, Far right: Speaker icon */}
       <View style={styles.iconsSection}>
-        <TouchableOpacity style={[styles.iconButton, styles.coinButton]}>
+        <TouchableOpacity style={styles.iconButton}>
           <Text style={styles.iconEmoji}>🪙</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.iconButton, styles.trophyButton]}>
+        <TouchableOpacity style={styles.iconButton}>
           <Text style={styles.iconEmoji}>🏆</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.iconButton, styles.historyButton]}>
-          <Text style={styles.iconEmoji}>⏰</Text>
+        <TouchableOpacity style={styles.iconButton}>
+          <Text style={styles.iconEmoji}>🕐</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={[styles.iconButton, styles.soundButton]}>
+        <TouchableOpacity style={styles.iconButton}>
           <Text style={styles.iconEmoji}>🔊</Text>
         </TouchableOpacity>
       </View>
@@ -44,157 +44,59 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 0,
-    marginBottom: 0,
+    backgroundColor: 'transparent',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    width: '100%',
   },
   balanceSection: {
-    borderRadius: 20,
+    borderRadius: 25,
     overflow: 'hidden',
     shadowColor: '#4A90E2',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 4,
-    elevation: 4,
+    shadowOpacity: 0.6,
+    shadowRadius: 6,
+    elevation: 6,
   },
   balanceGradient: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
   },
   diamondIcon: {
-    fontSize: 18,
-    marginRight: 6,
+    fontSize: 20,
+    marginRight: 8,
   },
   balanceValue: {
     color: '#FFF',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: 'bold',
-    textShadowColor: 'rgba(0,0,0,0.5)',
+    textShadowColor: 'rgba(0,0,0,0.7)',
     textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
+    textShadowRadius: 3,
   },
   iconsSection: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-  },
-  container: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 12,
-    marginBottom: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 6,
-  },
-  leftSection: {
-    flexDirection: 'row',
-    flex: 1,
-    gap: 6,
-  },
-  balanceChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(74, 144, 226, 0.9)',
-    paddingHorizontal: 8,
-    paddingVertical: 6,
-    borderRadius: 15,
-    gap: 4,
-    shadowColor: '#4A90E2',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  coinsChip: {
-    backgroundColor: 'rgba(255, 193, 7, 0.9)',
-    shadowColor: '#FFC107',
-  },
-  balanceIcon: {
-    fontSize: 12,
-  },
-  balanceText: {
-    color: '#FFF',
-    fontSize: 11,
-    fontWeight: 'bold',
-    textShadowColor: 'rgba(0,0,0,0.5)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-  },
-  timerContainer: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  timerGradient: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 6,
-  },
-  timerText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#000',
-    textShadowColor: 'rgba(255,255,255,0.5)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-  },
-  timerLabel: {
-    color: '#FFF',
-    fontSize: 8,
-    fontWeight: 'bold',
-    marginTop: 2,
-    letterSpacing: 1,
-    textShadowColor: 'rgba(0,0,0,0.5)',
-    textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 2,
-  },
-  rightSection: {
-    flexDirection: 'row',
-    flex: 1,
-    justifyContent: 'flex-end',
-    gap: 4,
+    gap: 12,
   },
   iconButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 4,
-  },
-  coinButton: {
-    backgroundColor: 'rgba(255, 193, 7, 0.9)',
-  },
-  trophyButton: {
-    backgroundColor: 'rgba(255, 165, 0, 0.9)',
-  },
-  historyButton: {
-    backgroundColor: 'rgba(116, 185, 255, 0.9)',
-  },
-  soundButton: {
-    backgroundColor: 'rgba(46, 213, 115, 0.9)',
+    shadowOpacity: 0.4,
+    shadowRadius: 5,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   iconEmoji: {
-    fontSize: 16,
+    fontSize: 20,
   },
 });
