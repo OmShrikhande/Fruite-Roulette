@@ -1,8 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
-const { width } = Dimensions.get('window');
 
 interface BettingChipsPanelProps {
   selectedChip: number;
@@ -27,41 +26,50 @@ export const BettingChipsPanel: React.FC<BettingChipsPanelProps> = ({
 }) => {
   return (
     <View style={styles.container}>
-      {/* Left navigation arrow */}
+      {/* Left: Circular blue refresh/spin icon */}
+      <TouchableOpacity style={styles.spinButton} onPress={onSpin} disabled={!canSpin}>
+        <LinearGradient
+          colors={canSpin ? ['#4A90E2', '#357ABD'] : ['#95A5A6', '#7F8C8D']}
+          style={styles.spinGradient}
+        >
+          <Text style={styles.spinIcon}>🔄</Text>
+        </LinearGradient>
+      </TouchableOpacity>
+
+      {/* Navigation arrows */}
       <TouchableOpacity style={styles.navButton}>
         <Text style={styles.navButtonText}>◀</Text>
       </TouchableOpacity>
+      <TouchableOpacity style={styles.navButton}>
+        <Text style={styles.navButtonText}>▶</Text>
+      </TouchableOpacity>
 
-      {/* Help/Question icon */}
+      {/* Help/info icon */}
       <TouchableOpacity style={styles.helpButton}>
         <LinearGradient colors={['#4A90E2', '#357ABD']} style={styles.helpGradient}>
           <Text style={styles.helpButtonText}>?</Text>
         </LinearGradient>
       </TouchableOpacity>
 
-      {/* Betting chips */}
+      {/* Center: 5 poker chips with exact designs and values */}
       <View style={styles.chipsContainer}>
         {CHIP_VALUES.map((chip) => {
           const isSelected = selectedChip === chip.value;
           const isGlowing = isSelected && chip.value === 1000; // 1K chip glows when selected
-          
           return (
             <TouchableOpacity
               key={chip.value}
-              style={[
-                styles.chipButton,
-                isSelected && styles.selectedChip,
-                isGlowing && styles.glowingChip,
-              ]}
+              style={[styles.chipButton, isSelected && styles.selectedChip, isGlowing && styles.glowingChip]}
               onPress={() => onSelectChip(chip.value)}
             >
               <LinearGradient
-                colors={[chip.color, chip.color]}
+                colors={chip.value === 1000 ? ['#4169E1', '#00BFFF'] : [chip.color, chip.color]}
                 style={styles.chipGradient}
               >
                 <Text style={[
                   styles.chipText,
-                  chip.value === 10 && { color: '#000' } // White chip has black text
+                  chip.value === 10 && { color: '#000' },
+                  chip.value === 1000 && styles.chipTextGlow
                 ]}>
                   {chip.label}
                 </Text>
@@ -74,23 +82,13 @@ export const BettingChipsPanel: React.FC<BettingChipsPanelProps> = ({
         })}
       </View>
 
-      {/* Spin/Refresh icon */}
-      <TouchableOpacity 
-        style={[styles.spinButton, !canSpin && styles.spinButtonDisabled]}
-        onPress={onSpin}
-        disabled={!canSpin}
-      >
-        <LinearGradient
-          colors={canSpin ? ['#4ECDC4', '#44A08D'] : ['#95A5A6', '#7F8C8D']}
-          style={styles.spinGradient}
-        >
-          <Text style={styles.spinIcon}>🔄</Text>
-        </LinearGradient>
-      </TouchableOpacity>
-
-      {/* Right navigation arrow */}
-      <TouchableOpacity style={styles.navButton}>
-        <Text style={styles.navButtonText}>▶</Text>
+      {/* Far right: Menu icon (three stacked horizontal lines) */}
+      <TouchableOpacity style={styles.menuButton}>
+        <View style={styles.menuIcon}>
+          <View style={styles.menuLine} />
+          <View style={styles.menuLine} />
+          <View style={styles.menuLine} />
+        </View>
       </TouchableOpacity>
     </View>
   );
@@ -104,8 +102,36 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderRadius: 0,
+    borderRadius: 16,
     gap: 8,
+    width: '100%',
+  },
+  menuButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.1)',
+    marginLeft: 8,
+  },
+  menuIcon: {
+    width: 24,
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  menuLine: {
+    width: 20,
+    height: 3,
+    backgroundColor: '#FFF',
+    borderRadius: 2,
+    marginVertical: 2,
+  },
+  chipTextGlow: {
+    textShadowColor: '#00BFFF',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 8,
   },
   navButton: {
     width: 32,
