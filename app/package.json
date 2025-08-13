@@ -43,7 +43,8 @@
     "react-native-web": "~0.20.0",
     "react-native-webview": "13.13.5",
     "react-redux": "^9.1.0",
-    "zustand": "^4.5.2"
+    "zustand": "^4.5.2",
+    "styled-components": "^6.1.11"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
