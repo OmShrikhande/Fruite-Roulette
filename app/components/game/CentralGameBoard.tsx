@@ -9,59 +9,60 @@ interface CentralGameBoardProps {
   timer: number;
 }
 
-// Fruit sequence for the oval border (repeating pattern)
-const FRUITS = ['🍌', '🍇', '🍉', '🍊', '🍒', '🍎', '🍓', '🍋'];
+// Exact fruit sequence from the image border
+const FRUITS = ['🍊', '🍎', '🍇', '🍌', '🥝', '🍊', '🍎', '🍌', '🍇', '🥝', '🍊', '🍎', '🍌', '🍇', '🥝', '🍊', '🍎', '🍌'];
 
-// Betting zones data (2 rows × 4 columns) - exact values from description
+// Betting zones data exactly as shown in image (2 rows × 4 columns)
 const BETTING_ZONES = [
+  // Top row
   { amount: '70,000', multiplier: 'X38' },
   { amount: '41,780', multiplier: 'X28' },
-  { amount: '155,000', multiplier: 'X18' },
-  { amount: '89,500', multiplier: 'X10' },
-  { amount: '203,400', multiplier: 'X5' },
-  { amount: '67,890', multiplier: 'X15' },
-  { amount: '134,200', multiplier: 'X12' },
-  { amount: '98,750', multiplier: 'X25' },
+  { amount: '62,780', multiplier: 'X18' },
+  { amount: '155,000', multiplier: 'X10' },
+  // Bottom row
+  { amount: '5,100', multiplier: 'X5' },
+  { amount: '50,200', multiplier: 'X5' },
+  { amount: '3,600', multiplier: 'X5' },
+  { amount: '10,100', multiplier: 'X5' },
 ];
 
-// Poker chips data
+// Poker chips exactly as in image
 const POKER_CHIPS = [
-  { value: '10', color: '#FFFFFF', textColor: '#000000' },
-  { value: '100', color: '#FF8C00', textColor: '#FFFFFF' },
-  { value: '1K', color: '#4169E1', textColor: '#FFFFFF' },
-  { value: '5K', color: '#32CD32', textColor: '#FFFFFF' },
-  { value: '50K', color: '#DC143C', textColor: '#FFFFFF' },
+  { value: '10', color: '#E8E8E8', textColor: '#000000', borderColor: '#CCCCCC' },
+  { value: '100', color: '#FF8C00', textColor: '#FFFFFF', borderColor: '#FF6600' },
+  { value: '1K', color: '#4169E1', textColor: '#FFFFFF', borderColor: '#1E90FF' },
+  { value: '5K', color: '#32CD32', textColor: '#FFFFFF', borderColor: '#228B22' },
+  { value: '50K', color: '#DC143C', textColor: '#FFFFFF', borderColor: '#B22222' },
 ];
 
 export const CentralGameBoard: React.FC<CentralGameBoardProps> = ({ timer }) => {
   // Calculate positions for fruit icons around oval border
   const getFruitPosition = (index: number, total: number) => {
     const angle = (index / total) * 2 * Math.PI - Math.PI / 2;
-    const radiusX = width * 0.35;
-    const radiusY = width * 0.25;
+    const radiusX = width * 0.38;
+    const radiusY = width * 0.28;
     const x = Math.cos(angle) * radiusX;
     const y = Math.sin(angle) * radiusY;
     return { x, y };
   };
 
-  // Generate fruit icons around the oval (repeating pattern)
+  // Generate fruit icons around the oval border
   const generateFruitBorder = () => {
-    const totalFruits = 24; // More fruits for continuous border
+    const totalFruits = 18;
     const fruitElements = [];
     
     for (let i = 0; i < totalFruits; i++) {
-      const fruitIndex = i % FRUITS.length;
       const position = getFruitPosition(i, totalFruits);
       
       fruitElements.push(
         <FruitIcon
           key={i}
           style={{
-            left: width * 0.5 + position.x - 15,
-            top: height * 0.4 + position.y - 15,
+            left: width * 0.5 + position.x - 20,
+            top: height * 0.35 + position.y - 20,
           }}
         >
-          <FruitText>{FRUITS[fruitIndex]}</FruitText>
+          <FruitText>{FRUITS[i]}</FruitText>
         </FruitIcon>
       );
     }
@@ -71,62 +72,76 @@ export const CentralGameBoard: React.FC<CentralGameBoardProps> = ({ timer }) => 
 
   return (
     <Container>
-      {/* Outer Track with Fruit Border */}
+      {/* Green textured background */}
+      <BackgroundGradient
+        colors={['#2d5016', '#4a7c59', '#2d5016']}
+      />
+
+      {/* Fruit border around the oval */}
       <OuterTrack>
         {generateFruitBorder()}
       </OuterTrack>
 
-      {/* Beige Sand-Textured Oval Path */}
+      {/* Beige oval track with green interior and betting zones */}
       <OvalTrack>
-        {/* 8 Rectangular Betting Zones in 2 rows × 4 columns */}
-        <BettingGrid>
-          {BETTING_ZONES.map((zone, index) => {
-            const row = Math.floor(index / 4);
-            const col = index % 4;
-            
-            return (
-              <BettingZone
-                key={index}
-                style={{
-                  left: col * 85 + 20,
-                  top: row * 80 + 30,
-                }}
-              >
-                {/* Top Center: Large bold number in gradient orange/yellow */}
-                <LinearGradient
-                  colors={['#FFA500', '#FFD700']}
-                  style={{ borderRadius: 4, paddingHorizontal: 6, paddingVertical: 2 }}
+        {/* Green interior of the oval */}
+        <OvalInterior>
+          {/* 8 Rectangular betting zones in 2 rows × 4 columns */}
+          <BettingGrid>
+            {BETTING_ZONES.map((zone, index) => {
+              const row = Math.floor(index / 4);
+              const col = index % 4;
+              
+              return (
+                <BettingZone
+                  key={index}
+                  style={{
+                    left: col * 90 + 15,
+                    top: row * 85 + 25,
+                  }}
                 >
-                  <AmountText>{zone.amount}</AmountText>
-                </LinearGradient>
+                  {/* Amount in gradient orange background */}
+                  <LinearGradient
+                    colors={['#FF8C00', '#FFD700']}
+                    style={{ 
+                      borderRadius: 12, 
+                      paddingHorizontal: 12, 
+                      paddingVertical: 4,
+                      marginBottom: 4
+                    }}
+                  >
+                    <AmountText>{zone.amount}</AmountText>
+                  </LinearGradient>
 
-                {/* Middle: Stacked poker chips */}
-                <ChipStack>
-                  {POKER_CHIPS.map((chip, chipIndex) => (
-                    <Chip
-                      key={chipIndex}
-                      style={{
-                        backgroundColor: chip.color,
-                        marginLeft: chipIndex * -8,
-                        zIndex: chipIndex,
-                      }}
-                    >
-                      <ChipText style={{ color: chip.textColor }}>
-                        {chip.value}
-                      </ChipText>
-                    </Chip>
-                  ))}
-                </ChipStack>
+                  {/* Stacked poker chips */}
+                  <ChipStack>
+                    {POKER_CHIPS.map((chip, chipIndex) => (
+                      <Chip
+                        key={chipIndex}
+                        style={{
+                          backgroundColor: chip.color,
+                          borderColor: chip.borderColor,
+                          marginLeft: chipIndex > 0 ? -8 : 0,
+                          zIndex: POKER_CHIPS.length - chipIndex,
+                        }}
+                      >
+                        <ChipText style={{ color: chip.textColor }}>
+                          {chip.value}
+                        </ChipText>
+                      </Chip>
+                    ))}
+                  </ChipStack>
 
-                {/* Bottom Center: Multiplier label in bold yellow */}
-                <MultiplierText>{zone.multiplier}</MultiplierText>
-              </BettingZone>
-            );
-          })}
-        </BettingGrid>
+                  {/* Multiplier at bottom */}
+                  <MultiplierText>{zone.multiplier}</MultiplierText>
+                </BettingZone>
+              );
+            })}
+          </BettingGrid>
+        </OvalInterior>
       </OvalTrack>
 
-      {/* Top Center: Red LED-style countdown timer */}
+      {/* Red LED timer at top center */}
       <TimerDisplay>
         <TimerText>{timer.toString().padStart(2, '0')}</TimerText>
       </TimerDisplay>
@@ -136,43 +151,59 @@ export const CentralGameBoard: React.FC<CentralGameBoardProps> = ({ timer }) => 
 
 const Container = styled.View`
   width: ${width}px;
-  height: ${height * 0.7}px;
+  height: ${height * 0.65}px;
   justify-content: center;
   align-items: center;
   position: relative;
+`;
+
+const BackgroundGradient = styled(LinearGradient)`
+  position: absolute;
+  width: 100%;
+  height: 100%;
 `;
 
 const OuterTrack = styled.View`
   position: absolute;
-  width: ${width * 0.8}px;
-  height: ${width * 0.6}px;
+  width: ${width * 0.85}px;
+  height: ${width * 0.65}px;
 `;
 
 const FruitIcon = styled.View`
   position: absolute;
-  width: 30px;
-  height: 30px;
+  width: 40px;
+  height: 40px;
   justify-content: center;
   align-items: center;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 20px;
 `;
 
 const FruitText = styled.Text`
-  font-size: 24px;
+  font-size: 28px;
 `;
 
 const OvalTrack = styled.View`
-  width: ${width * 0.7}px;
-  height: ${width * 0.5}px;
+  width: ${width * 0.75}px;
+  height: ${width * 0.55}px;
   background-color: #F5DEB3;
-  border-radius: ${width * 0.25}px;
-  border-width: 4px;
+  border-radius: ${width * 0.275}px;
+  border-width: 8px;
   border-color: #DEB887;
   position: relative;
   shadow-color: #000;
-  shadow-offset: 0px 4px;
-  shadow-opacity: 0.3;
-  shadow-radius: 8px;
-  elevation: 8;
+  shadow-offset: 0px 6px;
+  shadow-opacity: 0.4;
+  shadow-radius: 12px;
+  elevation: 12;
+  padding: 8px;
+`;
+
+const OvalInterior = styled.View`
+  flex: 1;
+  background-color: #2d5016;
+  border-radius: ${width * 0.25}px;
+  position: relative;
 `;
 
 const BettingGrid = styled.View`
@@ -183,24 +214,24 @@ const BettingGrid = styled.View`
 
 const BettingZone = styled.View`
   position: absolute;
-  width: 80px;
-  height: 70px;
+  width: 85px;
+  height: 80px;
   background-color: rgba(245, 222, 179, 0.95);
-  border-radius: 8px;
+  border-radius: 12px;
   justify-content: center;
   align-items: center;
   border-width: 2px;
   border-color: #DEB887;
   shadow-color: #000;
-  shadow-offset: 0px 2px;
-  shadow-opacity: 0.25;
-  shadow-radius: 4px;
-  elevation: 4;
+  shadow-offset: 0px 3px;
+  shadow-opacity: 0.3;
+  shadow-radius: 6px;
+  elevation: 6;
   padding: 4px;
 `;
 
 const AmountText = styled.Text`
-  font-size: 9px;
+  font-size: 11px;
   font-weight: bold;
   color: #FFFFFF;
   text-align: center;
@@ -211,7 +242,7 @@ const ChipStack = styled.View`
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  margin-vertical: 4px;
+  margin-vertical: 3px;
   height: 20px;
 `;
 
@@ -222,12 +253,11 @@ const Chip = styled.View`
   justify-content: center;
   align-items: center;
   border-width: 1px;
-  border-color: #FFFFFF;
   shadow-color: #000;
   shadow-offset: 0px 1px;
   shadow-opacity: 0.4;
-  shadow-radius: 3px;
-  elevation: 4;
+  shadow-radius: 2px;
+  elevation: 3;
 `;
 
 const ChipText = styled.Text`
@@ -238,32 +268,38 @@ const ChipText = styled.Text`
 `;
 
 const MultiplierText = styled.Text`
-  font-size: 10px;
+  font-size: 12px;
   font-weight: bold;
   color: #FFD700;
   text-align: center;
   font-family: monospace;
+  text-shadow-color: #FF8C00;
+  text-shadow-offset: 1px 1px;
+  text-shadow-radius: 2px;
 `;
 
 const TimerDisplay = styled.View`
   position: absolute;
-  top: ${height * 0.25}px;
+  top: ${height * 0.22}px;
   background-color: #000000;
-  padding-horizontal: 16px;
-  padding-vertical: 8px;
-  border-radius: 6px;
+  padding-horizontal: 20px;
+  padding-vertical: 10px;
+  border-radius: 8px;
   border-width: 2px;
   border-color: #FF0000;
   shadow-color: #FF0000;
-  shadow-offset: 0px 2px;
-  shadow-opacity: 0.6;
-  shadow-radius: 6px;
-  elevation: 8;
+  shadow-offset: 0px 3px;
+  shadow-opacity: 0.8;
+  shadow-radius: 8px;
+  elevation: 10;
 `;
 
 const TimerText = styled.Text`
-  font-size: 20px;
+  font-size: 24px;
   font-weight: bold;
   color: #FF0000;
   font-family: monospace;
+  text-shadow-color: rgba(255, 0, 0, 0.5);
+  text-shadow-offset: 0px 0px;
+  text-shadow-radius: 6px;
 `;
