@@ -6,13 +6,15 @@ import SignupScreen from '../screens/SignupScreen';
 import GameScreen from '../screens/GameScreen';
 import ResultsScreen from '../screens/ResultsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import PixelPerfectRouletteScreen from '../screens/PixelPerfectRouletteScreen';
 
 const Tab = createBottomTabNavigator();
 
 const AppNavigator = () => {
   return (
     <NavigationContainer>
-      <Tab.Navigator initialRouteName="Game">
+      <Tab.Navigator initialRouteName="PixelPerfect">
+        <Tab.Screen name="PixelPerfect" component={PixelPerfectRouletteScreen} options={{ title: 'Pixel Perfect Roulette' }} />
         <Tab.Screen name="Game" component={GameScreen} />
         <Tab.Screen name="Results" component={ResultsScreen} />
         <Tab.Screen name="Profile" component={ProfileScreen} />
