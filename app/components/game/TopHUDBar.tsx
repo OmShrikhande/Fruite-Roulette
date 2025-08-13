@@ -10,25 +10,25 @@ interface TopHUDBarProps {
 export const TopHUDBar: React.FC<TopHUDBarProps> = ({ balance }) => {
   return (
     <Container>
-      {/* Left Section: Light blue diamond icon with balance */}
+      {/* Left Section: Blue logo with balance */}
       <LeftSection>
-        <DiamondIcon>💎</DiamondIcon>
+        <LogoIcon>💠</LogoIcon>
         <BalanceText>{balance}</BalanceText>
       </LeftSection>
 
-      {/* Center Icons: Gold coin, Trophy, Clock, Speaker */}
+      {/* Center Icons: Coin, Trophy, Clock, Speaker - exactly as in image */}
       <CenterIcons>
         <IconButton>
-          <IconText>🪙</IconText>
+          <CoinIcon>Ⓔ</CoinIcon>
         </IconButton>
         <IconButton>
-          <IconText>🏆</IconText>
+          <TrophyIcon>🏆</TrophyIcon>
         </IconButton>
         <IconButton>
-          <IconText>🕐</IconText>
+          <ClockIcon>🕐</ClockIcon>
         </IconButton>
         <IconButton>
-          <IconText>🔊</IconText>
+          <SpeakerIcon>🔊</SpeakerIcon>
         </IconButton>
       </CenterIcons>
     </Container>
@@ -40,25 +40,25 @@ const Container = styled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  background-color: #0A2A45;
+  background-color: #1a3a52;
   padding-horizontal: 20px;
-  padding-vertical: 16px;
+  padding-vertical: 12px;
 `;
 
 const LeftSection = styled.View`
   flex-direction: row;
   align-items: center;
-  background-color: rgba(74, 144, 226, 0.15);
-  padding-horizontal: 16px;
-  padding-vertical: 8px;
-  border-radius: 20px;
-  border: 1px solid rgba(74, 144, 226, 0.4);
+  background-color: rgba(30, 60, 90, 0.8);
+  padding-horizontal: 12px;
+  padding-vertical: 6px;
+  border-radius: 15px;
+  border: 1px solid rgba(100, 150, 200, 0.3);
 `;
 
-const DiamondIcon = styled.Text`
-  font-size: 20px;
+const LogoIcon = styled.Text`
+  font-size: 24px;
   margin-right: 8px;
-  color: #87CEEB;
+  color: #4A90E2;
 `;
 
 const BalanceText = styled.Text`
@@ -70,19 +70,33 @@ const BalanceText = styled.Text`
 const CenterIcons = styled.View`
   flex-direction: row;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 `;
 
 const IconButton = styled.TouchableOpacity`
-  width: 44px;
-  height: 44px;
-  border-radius: 22px;
-  background-color: rgba(255, 255, 255, 0.1);
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  background-color: rgba(30, 60, 90, 0.8);
   justify-content: center;
   align-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(100, 150, 200, 0.3);
 `;
 
-const IconText = styled.Text`
-  font-size: 20px;
+const CoinIcon = styled.Text`
+  font-size: 18px;
+  color: #FFD700;
+  font-weight: bold;
+`;
+
+const TrophyIcon = styled.Text`
+  font-size: 18px;
+`;
+
+const ClockIcon = styled.Text`
+  font-size: 18px;
+`;
+
+const SpeakerIcon = styled.Text`
+  font-size: 18px;
 `;
