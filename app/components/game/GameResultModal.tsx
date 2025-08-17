@@ -1,354 +1,179 @@
-import React, { useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, Modal, Animated, Easing, Dimensions } from 'react-native';
-import styled from 'styled-components/native';
-import { LinearGradient } from 'expo-linear-gradient';
-
-const { width, height } = Dimensions.get('window');
+import React, { useEffect, useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 interface GameResultModalProps {
-  visible: boolean;
-  result: {
-    fruit: string;
-    won: boolean;
-    winAmount: number;
-  } | null;
+  isOpen: boolean;
+  winAmount: number;
+  winningFruit: string;
+  isWin: boolean;
   onClose: () => void;
   onPlayAgain: () => void;
 }
 
-export const GameResultModal: React.FC<GameResultModalProps> = ({
-  visible,
-  result,
+const GameResultModal = ({
+  isOpen,
+  winAmount,
+  winningFruit,
+  isWin,
   onClose,
-  onPlayAgain,
-}) => {
-  const scaleAnimation = useRef(new Animated.Value(0)).current;
-  const rotateAnimation = useRef(new Animated.Value(0)).current;
-  const pulseAnimation = useRef(new Animated.Value(1)).current;
-  const confettiAnimation = useRef(new Animated.Value(0)).current;
+  onPlayAgain
+}: GameResultModalProps) => {
+  const [animate, setAnimate] = useState(false);
+  const [confetti, setConfetti] = useState<{ id: number; x: number; y: number; delay: number }[]>([]);
 
   useEffect(() => {
-    if (visible && result) {
-      // Entry animation
-      Animated.sequence([
-        Animated.timing(scaleAnimation, {
-          toValue: 1,
-          duration: 500,
-          easing: Easing.bounce,
-          useNativeDriver: true,
-        }),
-        // If won, show celebration animations
-        ...(result.won ? [
-          Animated.timing(confettiAnimation, {
-            toValue: 1,
-            duration: 1000,
-            useNativeDriver: true,
-          }),
-          Animated.loop(
-            Animated.sequence([
-              Animated.timing(pulseAnimation, {
-                toValue: 1.1,
-                duration: 600,
-                easing: Easing.inOut(Easing.ease),
-                useNativeDriver: true,
-              }),
-              Animated.timing(pulseAnimation, {
-                toValue: 1,
-                duration: 600,
-                easing: Easing.inOut(Easing.ease),
-                useNativeDriver: true,
-              }),
-            ]),
-            { iterations: 3 }
-          ),
-        ] : []),
-      ]).start();
-
-      // Fruit rotation animation
-      Animated.loop(
-        Animated.timing(rotateAnimation, {
-          toValue: 1,
-          duration: 2000,
-          easing: Easing.linear,
-          useNativeDriver: true,
-        })
-      ).start();
+    if (isOpen) {
+      setAnimate(true);
+      
+      if (isWin) {
+        // Generate confetti particles
+        const particles = Array.from({ length: 50 }, (_, i) => ({
+          id: i,
+          x: Math.random() * 100,
+          y: Math.random() * 100,
+          delay: Math.random() * 2
+        }));
+        setConfetti(particles);
+      }
     } else {
-      scaleAnimation.setValue(0);
-      rotateAnimation.setValue(0);
-      pulseAnimation.setValue(1);
-      confettiAnimation.setValue(0);
+      setAnimate(false);
+      setConfetti([]);
     }
-  }, [visible, result]);
+  }, [isOpen, isWin]);
 
-  if (!result) return null;
+  const getResultMessage = () => {
+    if (isWin) {
+      if (winAmount >= 50000) return "🎊 MEGA WIN! 🎊";
+      if (winAmount >= 10000) return "🌟 BIG WIN! 🌟";
+      if (winAmount >= 1000) return "🎉 NICE WIN! 🎉";
+      return "💰 YOU WIN! 💰";
+    }
+    return "😔 Better luck next time! 😔";
+  };
 
-  const handleClose = () => {
-    Animated.timing(scaleAnimation, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start(() => {
-      onClose();
-    });
+  const getEncouragementMessage = () => {
+    const messages = [
+      "Every spin is a new chance!",
+      "Fortune favors the bold!",
+      "Your big win is coming!",
+      "Keep spinning, keep winning!",
+      "The next spin could be it!"
+    ];
+    return messages[Math.floor(Math.random() * messages.length)];
   };
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={handleClose}
-    >
-      <Overlay>
-        <Animated.View
-          style={{
-            transform: [{ scale: scaleAnimation }],
-          }}
-        >
-          <ResultContainer>
-            <LinearGradient
-              colors={result.won ? ['#00AA00', '#00FF00'] : ['#AA0000', '#FF0000']}
-              style={{
-                borderRadius: 20,
-                padding: 20,
-                alignItems: 'center',
-              }}
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-md mx-auto bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 border-2 border-yellow-400 text-white">
+        <DialogHeader>
+          <DialogTitle className="text-center text-2xl font-bold mb-4">
+            Game Result
+          </DialogTitle>
+        </DialogHeader>
+
+        {/* Confetti Animation */}
+        {isWin && confetti.length > 0 && (
+          <div className="absolute inset-0 pointer-events-none overflow-hidden">
+            {confetti.map((particle) => (
+              <div
+                key={particle.id}
+                className="absolute w-3 h-3 bg-yellow-400 rounded-full animate-bounce"
+                style={{
+                  left: `${particle.x}%`,
+                  top: `${particle.y}%`,
+                  animationDelay: `${particle.delay}s`,
+                  animationDuration: '3s'
+                }}
+              />
+            ))}
+          </div>
+        )}
+
+        <div className="text-center space-y-6 relative z-10">
+          {/* Result Message */}
+          <div className={`text-3xl font-bold transition-all duration-500 ${animate ? 'scale-100 opacity-100' : 'scale-50 opacity-0'}`}>
+            {getResultMessage()}
+          </div>
+
+          {/* Winning Fruit Display */}
+          <div className={`flex items-center justify-center transition-all duration-700 ${animate ? 'rotate-0' : 'rotate-180'}`}>
+            <div className={`
+              w-24 h-24 rounded-full flex items-center justify-center text-6xl
+              ${isWin 
+                ? 'bg-gradient-to-br from-yellow-400 to-orange-500 animate-pulse shadow-lg shadow-yellow-400/50' 
+                : 'bg-gradient-to-br from-gray-600 to-gray-700'
+              }
+            `}>
+              <span className={`${isWin ? 'animate-bounce' : ''}`}>
+                {winningFruit}
+              </span>
+            </div>
+          </div>
+
+          {/* Win Amount */}
+          {isWin ? (
+            <div className={`space-y-2 transition-all duration-1000 ${animate ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+              <div className="text-lg text-yellow-300">Congratulations!</div>
+              <div className="text-4xl font-bold text-green-400 animate-pulse">
+                +${winAmount.toLocaleString()}
+              </div>
+              <div className="text-sm text-blue-300">
+                🎉 Amazing spin! 🎉
+              </div>
+            </div>
+          ) : (
+            <div className={`space-y-2 transition-all duration-1000 ${animate ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+              <div className="text-lg text-gray-300">No win this time</div>
+              <div className="text-2xl font-bold text-red-400">
+                ${winAmount.toLocaleString()}
+              </div>
+              <div className="text-sm text-purple-300">
+                {getEncouragementMessage()}
+              </div>
+            </div>
+          )}
+
+          {/* Action Buttons */}
+          <div className={`flex gap-4 justify-center pt-4 transition-all duration-1200 ${animate ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+            <button
+              onClick={onPlayAgain}
+              className={`
+                px-6 py-3 rounded-lg font-bold text-lg transition-all duration-200
+                ${isWin 
+                  ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 shadow-lg shadow-green-500/30' 
+                  : 'bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg shadow-blue-500/30'
+                }
+                hover:scale-105 transform
+              `}
             >
-              {/* Confetti effect for wins */}
-              {result.won && (
-                <ConfettiContainer>
-                  <Animated.View
-                    style={{
-                      opacity: confettiAnimation,
-                      transform: [
-                        {
-                          translateY: confettiAnimation.interpolate({
-                            inputRange: [0, 1],
-                            outputRange: [-50, 50],
-                          }),
-                        },
-                      ],
-                    }}
-                  >
-                    <ConfettiText>🎉 🎊 ✨ 🎉 🎊</ConfettiText>
-                  </Animated.View>
-                </ConfettiContainer>
-              )}
+              🎰 Play Again
+            </button>
+            <button
+              onClick={onClose}
+              className="px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 rounded-lg font-bold text-lg transition-all duration-200 hover:scale-105 transform shadow-lg shadow-gray-600/30"
+            >
+              📊 View Stats
+            </button>
+          </div>
 
-              {/* Result title */}
-              <Animated.View
-                style={{
-                  transform: [{ scale: pulseAnimation }],
-                }}
-              >
-                <ResultTitle>
-                  {result.won ? '🏆 WINNER! 🏆' : '💔 BETTER LUCK NEXT TIME 💔'}
-                </ResultTitle>
-              </Animated.View>
-
-              {/* Winning fruit with rotation */}
-              <Animated.View
-                style={{
-                  transform: [
-                    {
-                      rotate: rotateAnimation.interpolate({
-                        inputRange: [0, 1],
-                        outputRange: ['0deg', '360deg'],
-                      }),
-                    },
-                  ],
-                  marginVertical: 20,
-                }}
-              >
-                <WinningFruit>{result.fruit}</WinningFruit>
-              </Animated.View>
-
-              {/* Result details */}
-              <ResultDetails>
-                <DetailRow>
-                  <DetailLabel>Winning Fruit:</DetailLabel>
-                  <DetailValue>{result.fruit}</DetailValue>
-                </DetailRow>
-                
-                {result.won ? (
-                  <>
-                    <DetailRow>
-                      <DetailLabel>You Won:</DetailLabel>
-                      <WinAmount>${result.winAmount.toLocaleString()}</WinAmount>
-                    </DetailRow>
-                    <CelebrationText>🎰 JACKPOT! 🎰</CelebrationText>
-                  </>
-                ) : (
-                  <>
-                    <DetailRow>
-                      <DetailLabel>Result:</DetailLabel>
-                      <LoseText>No winning bets</LoseText>
-                    </DetailRow>
-                    <EncouragementText>Try again! Fortune favors the bold! 🍀</EncouragementText>
-                  </>
-                )}
-              </ResultDetails>
-
-              {/* Action buttons */}
-              <ButtonContainer>
-                <ActionButton onPress={onPlayAgain}>
-                  <LinearGradient
-                    colors={['#FFD700', '#FF8C00']}
-                    style={{
-                      paddingHorizontal: 30,
-                      paddingVertical: 12,
-                      borderRadius: 25,
-                    }}
-                  >
-                    <ButtonText>🎮 Play Again</ButtonText>
-                  </LinearGradient>
-                </ActionButton>
-
-                <ActionButton onPress={handleClose}>
-                  <LinearGradient
-                    colors={['#666666', '#333333']}
-                    style={{
-                      paddingHorizontal: 30,
-                      paddingVertical: 12,
-                      borderRadius: 25,
-                    }}
-                  >
-                    <ButtonText>📊 View Stats</ButtonText>
-                  </LinearGradient>
-                </ActionButton>
-              </ButtonContainer>
-            </LinearGradient>
-          </ResultContainer>
-        </Animated.View>
-      </Overlay>
-    </Modal>
+          {/* Statistics Preview */}
+          <div className={`mt-4 p-3 bg-black/30 rounded-lg text-sm transition-all duration-1500 ${animate ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+            <div className="text-gray-300">This Round Statistics:</div>
+            <div className="flex justify-between mt-1">
+              <span>Winning Fruit:</span>
+              <span className="font-bold">{winningFruit}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Result:</span>
+              <span className={`font-bold ${isWin ? 'text-green-400' : 'text-red-400'}`}>
+                {isWin ? `+$${winAmount.toLocaleString()}` : 'No Win'}
+              </span>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 
-const Overlay = styled.View`
-  flex: 1;
-  background-color: rgba(0, 0, 0, 0.8);
-  justify-content: center;
-  align-items: center;
-`;
-
-const ResultContainer = styled.View`
-  width: ${width * 0.85}px;
-  max-height: ${height * 0.7}px;
-  shadow-color: #000;
-  shadow-offset: 0px 10px;
-  shadow-opacity: 0.5;
-  shadow-radius: 20px;
-  elevation: 20;
-`;
-
-const ConfettiContainer = styled.View`
-  position: absolute;
-  top: -30px;
-  left: 0;
-  right: 0;
-  align-items: center;
-  z-index: 10;
-`;
-
-const ConfettiText = styled.Text`
-  font-size: 24px;
-  text-align: center;
-`;
-
-const ResultTitle = styled.Text`
-  font-size: 24px;
-  font-weight: bold;
-  color: #FFFFFF;
-  text-align: center;
-  margin-bottom: 10px;
-  text-shadow-color: rgba(0, 0, 0, 0.5);
-  text-shadow-offset: 2px 2px;
-  text-shadow-radius: 4px;
-`;
-
-const WinningFruit = styled.Text`
-  font-size: 80px;
-  text-align: center;
-  text-shadow-color: rgba(0, 0, 0, 0.3);
-  text-shadow-offset: 3px 3px;
-  text-shadow-radius: 6px;
-`;
-
-const ResultDetails = styled.View`
-  background-color: rgba(255, 255, 255, 0.9);
-  border-radius: 15px;
-  padding: 20px;
-  margin-vertical: 20px;
-  width: 100%;
-`;
-
-const DetailRow = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-`;
-
-const DetailLabel = styled.Text`
-  font-size: 16px;
-  font-weight: bold;
-  color: #333333;
-`;
-
-const DetailValue = styled.Text`
-  font-size: 24px;
-`;
-
-const WinAmount = styled.Text`
-  font-size: 20px;
-  font-weight: bold;
-  color: #00AA00;
-  font-family: monospace;
-`;
-
-const LoseText = styled.Text`
-  font-size: 16px;
-  color: #AA0000;
-  font-weight: bold;
-`;
-
-const CelebrationText = styled.Text`
-  font-size: 18px;
-  font-weight: bold;
-  color: #FFD700;
-  text-align: center;
-  margin-top: 10px;
-  text-shadow-color: #FF8C00;
-  text-shadow-offset: 1px 1px;
-  text-shadow-radius: 2px;
-`;
-
-const EncouragementText = styled.Text`
-  font-size: 14px;
-  color: #666666;
-  text-align: center;
-  margin-top: 10px;
-  font-style: italic;
-`;
-
-const ButtonContainer = styled.View`
-  flex-direction: row;
-  gap: 15px;
-`;
-
-const ActionButton = styled.TouchableOpacity`
-  shadow-color: #000;
-  shadow-offset: 0px 4px;
-  shadow-opacity: 0.3;
-  shadow-radius: 8px;
-  elevation: 8;
-`;
-
-const ButtonText = styled.Text`
-  color: #FFFFFF;
-  font-size: 16px;
-  font-weight: bold;
-  text-align: center;
-`;
+export default GameResultModal;

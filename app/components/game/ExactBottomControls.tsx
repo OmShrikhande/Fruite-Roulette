@@ -1,263 +1,88 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
-import styled from 'styled-components/native';
-import { LinearGradient } from 'expo-linear-gradient';
 
-const { width } = Dimensions.get('window');
+const ExactBottomControls = () => {
+  const scrollFruits = ['🍊', '🥝', '🍎', '🍇', '🍌', '🥝', '🍇', '🥝', '🍊', '🥝', '🍊', '🍎', '🍇', '🍌'];
+  
+  const chips = [
+    { value: 10, bg: 'bg-chip-10', text: 'text-chip-10-text', border: 'border-gray-400' },
+    { value: 100, bg: 'bg-chip-100', text: 'text-chip-100-text', border: 'border-orange-600' },
+    { value: '1K', bg: 'bg-chip-1k', text: 'text-chip-1k-text', border: 'border-blue-600', selected: true },
+    { value: '5K', bg: 'bg-chip-5k', text: 'text-chip-5k-text', border: 'border-green-600' },
+    { value: '50K', bg: 'bg-chip-50k', text: 'text-chip-50k-text', border: 'border-red-600' },
+  ];
 
-interface ExactBottomControlsProps {
-  selectedChip: number;
-  onSelectChip: (value: number) => void;
-}
-
-// Exact fruit sequence from bottom scrollable row
-const SCROLLABLE_FRUITS = [
-  '🍊', '🥝', '🍎', '🍇', '🍌', '🥝', '🍇', '🥝', 
-  '🍊', '🥝', '🍊', '🍎', '🍇', '🍌'
-];
-
-// Exact betting chips as shown
-const BETTING_CHIPS = [
-  { value: 10, label: '10', color: '#E8E8E8', textColor: '#000000', borderColor: '#CCCCCC' },
-  { value: 100, label: '100', color: '#FF8C00', textColor: '#FFFFFF', borderColor: '#FF6600' },
-  { value: 1000, label: '1K', color: '#4169E1', textColor: '#FFFFFF', borderColor: '#1E90FF' },
-  { value: 5000, label: '5K', color: '#32CD32', textColor: '#FFFFFF', borderColor: '#228B22' },
-  { value: 50000, label: '50K', color: '#DC143C', textColor: '#FFFFFF', borderColor: '#B22222' },
-];
-
-export const ExactBottomControls: React.FC<ExactBottomControlsProps> = ({
-  selectedChip,
-  onSelectChip,
-}) => {
   return (
-    <Container>
-      {/* Top row: Navigation and fruit scroll */}
-      <TopRow>
-        <LeftNavButton>
-          <NavArrow>◀</NavArrow>
-        </LeftNavButton>
-        
-        <HelpButton>
-          <HelpText>?</HelpText>
-        </HelpButton>
-        
-        <FruitScrollArea>
-          <ScrollView 
-            horizontal 
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ 
-              alignItems: 'center', 
-              paddingHorizontal: 8 
-            }}
-          >
-            {SCROLLABLE_FRUITS.map((fruit, index) => (
-              <FruitButton key={index}>
-                <FruitEmoji>{fruit}</FruitEmoji>
-              </FruitButton>
-            ))}
-          </ScrollView>
-        </FruitScrollArea>
+    <div className="bg-game-hud-bg p-4 border-t border-game-button-dark/50">
+      {/* Top Row */}
+      <div className="flex items-center justify-between mb-4">
+        {/* Left Arrow */}
+        <button className="w-10 h-10 bg-game-button-dark rounded-lg flex items-center justify-center border border-game-button-dark/50 hover:bg-game-button-dark/80 transition-colors">
+          <span className="text-white text-lg">◀</span>
+        </button>
 
-        <RightNavButton>
-          <NavArrow>▶</NavArrow>
-        </RightNavButton>
-      </TopRow>
+        {/* Help Button */}
+        <button className="w-10 h-10 bg-game-button-dark rounded-lg flex items-center justify-center border border-game-button-dark/50 hover:bg-game-button-dark/80 transition-colors">
+          <span className="text-white text-lg font-bold">?</span>
+        </button>
 
-      {/* Bottom row: Spin button, chips, menu */}
-      <BottomRow>
-        {/* Blue spin button */}
-        <SpinButton>
-          <LinearGradient
-            colors={['#4A90E2', '#357ABD']}
-            style={{
-              width: 50,
-              height: 50,
-              borderRadius: 25,
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <SpinIcon>🔄</SpinIcon>
-          </LinearGradient>
-        </SpinButton>
-
-        {/* 5 poker chips */}
-        <ChipsArea>
-          {BETTING_CHIPS.map((chip) => {
-            const isSelected = selectedChip === chip.value;
-            return (
-              <ChipButton
-                key={chip.value}
-                onPress={() => onSelectChip(chip.value)}
-                style={{
-                  shadowColor: isSelected ? chip.borderColor : '#000',
-                  shadowOpacity: isSelected ? 0.8 : 0.3,
-                  shadowRadius: isSelected ? 6 : 3,
-                  elevation: isSelected ? 6 : 3,
-                }}
+        {/* Scrollable Fruits */}
+        <div className="flex-1 mx-4 overflow-hidden">
+          <div className="flex items-center gap-2 justify-center">
+            {scrollFruits.map((fruit, index) => (
+              <div
+                key={index}
+                className="w-10 h-10 bg-black/40 rounded-full flex items-center justify-center flex-shrink-0"
               >
-                <ChipGradient
-                  colors={[chip.color, chip.color]}
-                  style={{
-                    width: 50,
-                    height: 50,
-                    borderRadius: 25,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    borderWidth: 3,
-                    borderColor: chip.borderColor,
-                  }}
-                >
-                  <ChipLabel style={{ color: chip.textColor }}>
-                    {chip.label}
-                  </ChipLabel>
-                </ChipGradient>
-              </ChipButton>
-            );
-          })}
-        </ChipsArea>
+                <span className="text-2xl">{fruit}</span>
+              </div>
+            ))}
+          </div>
+        </div>
 
-        {/* Hamburger menu */}
-        <MenuButton>
-          <MenuLine />
-          <MenuLine />
-          <MenuLine />
-        </MenuButton>
-      </BottomRow>
-    </Container>
+        {/* Right Arrow */}
+        <button className="w-10 h-10 bg-game-button-dark rounded-lg flex items-center justify-center border border-game-button-dark/50 hover:bg-game-button-dark/80 transition-colors">
+          <span className="text-white text-lg">▶</span>
+        </button>
+      </div>
+
+      {/* Bottom Row */}
+      <div className="flex items-center justify-between">
+        {/* Spin Button */}
+        <button 
+          className="w-12 h-12 rounded-full flex items-center justify-center border-2 border-blue-400 hover:bg-blue-600/20 transition-colors"
+          style={{
+            background: 'linear-gradient(135deg, hsl(225 73% 57%), hsl(225 73% 47%))'
+          }}
+        >
+          <span className="text-white text-xl">🔄</span>
+        </button>
+
+        {/* 5 Poker Chips */}
+        <div className="flex items-center gap-2">
+          {chips.map((chip, index) => (
+            <button
+              key={index}
+              className={`
+                w-12 h-12 ${chip.bg} ${chip.text} rounded-full flex items-center justify-center 
+                border-2 ${chip.border} font-bold text-sm transition-all duration-200
+                ${chip.selected 
+                  ? 'ring-4 ring-blue-400/50 shadow-lg shadow-blue-400/30 scale-110' 
+                  : 'hover:scale-105'
+                }
+              `}
+            >
+              {chip.value}
+            </button>
+          ))}
+        </div>
+
+        {/* Menu Button */}
+        <button className="w-12 h-12 bg-game-button-dark rounded-lg flex items-center justify-center border border-game-button-dark/50 hover:bg-game-button-dark/80 transition-colors">
+          <span className="text-white text-lg">≡</span>
+        </button>
+      </div>
+    </div>
   );
 };
 
-const Container = styled.View`
-  background-color: #1a3a52;
-  padding: 10px;
-`;
-
-const TopRow = styled.View`
-  flex-direction: row;
-  align-items: center;
-  margin-bottom: 10px;
-  height: 48px;
-`;
-
-const LeftNavButton = styled.TouchableOpacity`
-  width: 38px;
-  height: 38px;
-  background-color: rgba(30, 60, 90, 0.8);
-  border-radius: 6px;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid rgba(100, 150, 200, 0.4);
-`;
-
-const HelpButton = styled.TouchableOpacity`
-  width: 38px;
-  height: 38px;
-  background-color: rgba(30, 60, 90, 0.8);
-  border-radius: 6px;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid rgba(100, 150, 200, 0.4);
-  margin-left: 8px;
-`;
-
-const HelpText = styled.Text`
-  color: #FFFFFF;
-  font-size: 16px;
-  font-weight: bold;
-`;
-
-const FruitScrollArea = styled.View`
-  flex: 1;
-  margin-horizontal: 10px;
-`;
-
-const FruitButton = styled.TouchableOpacity`
-  width: 42px;
-  height: 42px;
-  justify-content: center;
-  align-items: center;
-  margin-horizontal: 3px;
-  background-color: rgba(0, 0, 0, 0.4);
-  border-radius: 21px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-`;
-
-const FruitEmoji = styled.Text`
-  font-size: 24px;
-`;
-
-const RightNavButton = styled.TouchableOpacity`
-  width: 38px;
-  height: 38px;
-  background-color: rgba(30, 60, 90, 0.8);
-  border-radius: 6px;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid rgba(100, 150, 200, 0.4);
-`;
-
-const NavArrow = styled.Text`
-  color: #FFFFFF;
-  font-size: 14px;
-  font-weight: bold;
-`;
-
-const BottomRow = styled.View`
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const SpinButton = styled.TouchableOpacity`
-  shadow-color: #4A90E2;
-  shadow-offset: 0px 3px;
-  shadow-opacity: 0.6;
-  shadow-radius: 6px;
-  elevation: 6;
-`;
-
-const SpinIcon = styled.Text`
-  font-size: 20px;
-`;
-
-const ChipsArea = styled.View`
-  flex-direction: row;
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-  margin-horizontal: 12px;
-`;
-
-const ChipButton = styled.TouchableOpacity`
-  shadow-offset: 0px 2px;
-`;
-
-const ChipGradient = styled(LinearGradient)``;
-
-const ChipLabel = styled.Text`
-  font-size: 12px;
-  font-weight: bold;
-  font-family: monospace;
-  text-shadow-offset: 1px 1px;
-  text-shadow-radius: 1px;
-`;
-
-const MenuButton = styled.TouchableOpacity`
-  width: 46px;
-  height: 46px;
-  border-radius: 6px;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(30, 60, 90, 0.8);
-  border: 1px solid rgba(100, 150, 200, 0.4);
-`;
-
-const MenuLine = styled.View`
-  width: 18px;
-  height: 2.5px;
-  background-color: #FFFFFF;
-  border-radius: 1px;
-  margin-vertical: 1.5px;
-`;
+export default ExactBottomControls;
