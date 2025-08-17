@@ -1,6 +1,13 @@
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { DayPicker } from "react-day-picker";
+// Guard import for native builds to avoid bundling web-only lib in RN runtime
+let DayPicker: any
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  DayPicker = require("react-day-picker").DayPicker
+} catch {
+  DayPicker = (props: any) => null
+}
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";

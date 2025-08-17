@@ -5,7 +5,7 @@ interface SpinningGameBoardProps {
   timer: number;
   selectedBets: Record<string, number>;
   winningFruit?: string;
-  onSpinComplete: (result: string) => void;
+  onSpinComplete: (fruit: string) => void;
 }
 
 const SpinningGameBoard = ({ 
@@ -20,7 +20,7 @@ const SpinningGameBoard = ({
   
   const [highlightedIndex, setHighlightedIndex] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
-  const spinIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const spinIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   
   const bettingData = [
     // Top row
@@ -42,7 +42,7 @@ const SpinningGameBoard = ({
     
     return () => {
       if (spinIntervalRef.current) {
-        clearInterval(spinIntervalRef.current);
+        clearInterval(spinIntervalRef.current as unknown as number);
       }
     };
   }, [gamePhase]);
@@ -85,7 +85,7 @@ const SpinningGameBoard = ({
         } else {
           slowDownInterval();
         }
-      }, currentSpeed);
+      }, currentSpeed) as unknown as ReturnType<typeof setInterval>;
     };
     
     slowDownInterval();

@@ -34,21 +34,25 @@ export const ChipSelector: React.FC<ChipSelectorProps> = ({
       </TouchableOpacity>
       {/* Chips */}
       <View style={styles.chipsRow}>
-        {CHIP_VALUES.map((value, idx) => {
-          let chipColor = {};
-          if (value === 10) chipColor = { backgroundColor: '#B0B0B0' };
-          if (value === 100) chipColor = { backgroundColor: '#FF9800' };
-          if (value === 1000) chipColor = { backgroundColor: '#2196F3' };
-          if (value === 5000) chipColor = { backgroundColor: '#43A047' };
-          if (value === 50000) chipColor = { backgroundColor: '#E53935' };
+        {CHIP_VALUES.map((chip, idx) => {
+          let chipColor = {} as { backgroundColor?: string };
+          if (chip.value === 10) chipColor = { backgroundColor: '#B0B0B0' };
+          if (chip.value === 100) chipColor = { backgroundColor: '#FF9800' };
+          if (chip.value === 1000) chipColor = { backgroundColor: '#2196F3' };
+          if (chip.value === 5000) chipColor = { backgroundColor: '#43A047' };
+          if (chip.value === 50000) chipColor = { backgroundColor: '#E53935' };
           return (
             <TouchableOpacity
-              key={value}
-              style={[styles.chip, chipColor, value === 1000 && selectedChip === value ? styles.chipGlow : null]}
-              onPress={() => onSelectChip(value)}
+              key={chip.value}
+              style={[
+                styles.chip,
+                chipColor,
+                chip.value === 1000 && selectedChip === chip.value ? styles.chipGlow : null,
+              ]}
+              onPress={() => onSelectChip(chip.value)}
               activeOpacity={0.8}
             >
-              <Text style={styles.chipText}>{formatChipValue(value)}</Text>
+              <Text style={styles.chipText}>{formatChipValue(chip.value)}</Text>
             </TouchableOpacity>
           );
         })}

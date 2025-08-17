@@ -1,5 +1,12 @@
 import * as React from "react"
-import * as RechartsPrimitive from "recharts"
+// Guard: make recharts import optional in native builds
+let RechartsPrimitive: any = {}
+try {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  RechartsPrimitive = require("recharts")
+} catch {
+  RechartsPrimitive = {}
+}
 
 import { cn } from "@/lib/utils"
 

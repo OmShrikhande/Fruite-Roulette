@@ -1,4 +1,5 @@
 import * as React from "react"
+// NOTE: Web-only Dialog props, safe for web bundle; do not use this component in native screens
 import { type DialogProps } from "@radix-ui/react-dialog"
 import { Command as CommandPrimitive } from "cmdk"
 import { Search } from "lucide-react"

@@ -4,6 +4,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 interface GameHeaderProps {
   balance: number;
+  timer?: number;
+  gems?: number;
 }
 
 export const GameHeader: React.FC<GameHeaderProps> = ({ balance }) => {

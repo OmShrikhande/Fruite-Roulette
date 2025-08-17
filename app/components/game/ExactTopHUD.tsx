@@ -1,6 +1,6 @@
 import React from 'react';
 
-const ExactTopHUD = () => {
+const ExactTopHUD = ({ balance = 0 }: { balance?: number }) => {
   return (
     <div className="h-[60px] bg-game-hud-bg flex items-center justify-between px-4 border-b border-game-button-dark">
       {/* Left Section */}
@@ -12,7 +12,7 @@ const ExactTopHUD = () => {
         
         {/* Balance Display */}
         <div className="bg-game-button-dark/80 px-4 py-2 rounded-lg">
-          <span className="text-white font-mono text-lg font-bold">0</span>
+          <span className="text-white font-mono text-lg font-bold">{balance.toLocaleString()}</span>
         </div>
       </div>
 

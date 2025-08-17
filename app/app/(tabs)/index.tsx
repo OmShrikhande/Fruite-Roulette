@@ -112,10 +112,12 @@ export default function HomeScreen() {
       };
     });
 
+    const topPercent = 10 + ((index * 8) % 60)
+    const leftPercent = 5 + ((index * 12) % 80)
     const randomPosition = {
-      top: `${10 + (index * 8) % 60}%`,
-      left: `${5 + (index * 12) % 80}%`,
-    };
+      top: (topPercent / 100) * height,
+      left: (leftPercent / 100) * width,
+    } as const;
 
     return (
       <Animated.View

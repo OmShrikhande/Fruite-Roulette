@@ -2,10 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { View, StatusBar, Dimensions, Alert, BackHandler } from 'react-native';
 import styled from 'styled-components/native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ExactTopHUD } from '../components/game/ExactTopHUD';
-import { SpinningGameBoard } from '../components/game/SpinningGameBoard';
-import { BettingControls } from '../components/game/BettingControls';
-import { GameResultModal } from '../components/game/GameResultModal';
+import ExactTopHUD from '../components/game/ExactTopHUD';
+import SpinningGameBoard from '../components/game/SpinningGameBoard';
+import BettingControls from '../components/game/BettingControls';
+import GameResultModal from '../components/game/GameResultModal';
 
 const { width, height } = Dimensions.get('window');
 
@@ -24,7 +24,7 @@ const AutoSpinRouletteScreen: React.FC = () => {
   const [showResultModal, setShowResultModal] = useState(false);
   const [gameHistory, setGameHistory] = useState<any[]>([]);
 
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Initialize game timer
   useEffect(() => {
@@ -162,9 +162,17 @@ const AutoSpinRouletteScreen: React.FC = () => {
       {/* Central Spinning Game Board */}
       <GameContainer>
         <SpinningGameBoard 
+          gamePhase={gamePhase}
           timer={timer}
-          onGameEnd={handleGameEnd}
           selectedBets={selectedBets}
+          onSpinComplete={(fruit) => {
+            const totalBets = Object.values(selectedBets).reduce((sum, bet) => sum + bet, 0)
+            const chosenBet = selectedBets[fruit] || 0
+            const won = chosenBet > 0
+            const multiplierMap: Record<string, number> = { '🍊': 38, '🍎': 28, '🍇': 18, '🍌': 10, '🥝': 5 }
+            const winAmount = won ? chosenBet * (multiplierMap[fruit] || 1) : 0
+            handleGameEnd({ fruit, won, winAmount })
+          }}
         />
       </GameContainer>
 
@@ -182,8 +190,10 @@ const AutoSpinRouletteScreen: React.FC = () => {
 
       {/* Game Result Modal */}
       <GameResultModal
-        visible={showResultModal}
-        result={gameResult}
+        isOpen={showResultModal}
+        winningFruit={gameResult?.fruit ?? ''}
+        isWin={gameResult?.won ?? false}
+        winAmount={gameResult?.winAmount ?? 0}
         onClose={handleCloseResult}
         onPlayAgain={handlePlayAgain}
       />
