@@ -1,107 +1,45 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import styled from 'styled-components/native';
 
-interface ExactTopHUDProps {
-  balance: number;
-}
-
-export const ExactTopHUD: React.FC<ExactTopHUDProps> = ({ balance }) => {
+const ExactTopHUD = ({ balance = 0 }: { balance?: number }) => {
   return (
-    <Container>
-      {/* Left: Blue logo with white stripes and balance */}
-      <LeftSection>
-        <LogoContainer>
-          <LogoIcon>💠</LogoIcon>
-        </LogoContainer>
-        <BalanceText>{balance}</BalanceText>
-      </LeftSection>
+    <div className="h-[60px] bg-game-hud-bg flex items-center justify-between px-4 border-b border-game-button-dark">
+      {/* Left Section */}
+      <div className="flex items-center gap-3">
+        {/* Blue Diamond Logo */}
+        <div className="w-8 h-8 bg-game-logo-blue rounded-sm flex items-center justify-center text-white font-bold">
+          💠
+        </div>
+        
+        {/* Balance Display */}
+        <div className="bg-game-button-dark/80 px-4 py-2 rounded-lg">
+          <span className="text-white font-mono text-lg font-bold">{balance.toLocaleString()}</span>
+        </div>
+      </div>
 
-      {/* Right: Four circular icons */}
-      <RightSection>
-        <IconButton>
-          <GoldCoinIcon>Ⓔ</GoldCoinIcon>
-        </IconButton>
-        <IconButton>
-          <TrophyIcon>🏆</TrophyIcon>
-        </IconButton>
-        <IconButton>
-          <ClockIcon>🕐</ClockIcon>
-        </IconButton>
-        <IconButton>
-          <SpeakerIcon>🔊</SpeakerIcon>
-        </IconButton>
-      </RightSection>
-    </Container>
+      {/* Right Section - 4 Circular Icons */}
+      <div className="flex items-center gap-2">
+        {/* Gold Coin */}
+        <button className="w-9 h-9 bg-game-button-dark rounded-full flex items-center justify-center border border-game-button-dark/50 hover:bg-game-button-dark/80 transition-colors">
+          <span className="text-game-coin-gold text-lg">⓪</span>
+        </button>
+        
+        {/* Trophy */}
+        <button className="w-9 h-9 bg-game-button-dark rounded-full flex items-center justify-center border border-game-button-dark/50 hover:bg-game-button-dark/80 transition-colors">
+          <span className="text-yellow-400 text-base">🏆</span>
+        </button>
+        
+        {/* Clock */}
+        <button className="w-9 h-9 bg-game-button-dark rounded-full flex items-center justify-center border border-game-button-dark/50 hover:bg-game-button-dark/80 transition-colors">
+          <span className="text-white text-base">🕐</span>
+        </button>
+        
+        {/* Speaker */}
+        <button className="w-9 h-9 bg-game-button-dark rounded-full flex items-center justify-center border border-game-button-dark/50 hover:bg-game-button-dark/80 transition-colors">
+          <span className="text-white text-base">🔊</span>
+        </button>
+      </div>
+    </div>
   );
 };
 
-const Container = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #1a3a52;
-  padding-horizontal: 16px;
-  padding-vertical: 12px;
-  height: 60px;
-`;
-
-const LeftSection = styled.View`
-  flex-direction: row;
-  align-items: center;
-  background-color: rgba(30, 60, 90, 0.6);
-  padding-horizontal: 12px;
-  padding-vertical: 6px;
-  border-radius: 12px;
-  border: 1px solid rgba(100, 150, 200, 0.4);
-`;
-
-const LogoContainer = styled.View`
-  margin-right: 8px;
-`;
-
-const LogoIcon = styled.Text`
-  font-size: 20px;
-  color: #4A90E2;
-`;
-
-const BalanceText = styled.Text`
-  color: #FFFFFF;
-  font-size: 16px;
-  font-weight: bold;
-  font-family: monospace;
-`;
-
-const RightSection = styled.View`
-  flex-direction: row;
-  align-items: center;
-  gap: 8px;
-`;
-
-const IconButton = styled.TouchableOpacity`
-  width: 36px;
-  height: 36px;
-  border-radius: 18px;
-  background-color: rgba(30, 60, 90, 0.6);
-  justify-content: center;
-  align-items: center;
-  border: 1px solid rgba(100, 150, 200, 0.4);
-`;
-
-const GoldCoinIcon = styled.Text`
-  font-size: 16px;
-  color: #FFD700;
-  font-weight: bold;
-`;
-
-const TrophyIcon = styled.Text`
-  font-size: 16px;
-`;
-
-const ClockIcon = styled.Text`
-  font-size: 16px;
-`;
-
-const SpeakerIcon = styled.Text`
-  font-size: 16px;
-`;
+export default ExactTopHUD;
