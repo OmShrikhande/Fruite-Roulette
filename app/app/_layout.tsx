@@ -4,6 +4,9 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 
+// Ensure global Tailwind styles load on web
+import '../global.css';
+
 import { useColorScheme } from '@/hooks/useColorScheme';
 
 export default function RootLayout() {
