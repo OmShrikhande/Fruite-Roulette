@@ -4,4 +4,5 @@ const Index = () => {
   return <AutoSpinRouletteScreen />;
 };
 
+
 export default Index;
