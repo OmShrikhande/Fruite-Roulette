@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { View, StatusBar, Dimensions } from 'react-native';
 import styled from 'styled-components/native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ExactTopHUD } from '../components/game/ExactTopHUD';
-import { ExactGameBoard } from '../components/game/ExactGameBoard';
-import { ExactBottomControls } from '../components/game/ExactBottomControls';
+import ExactTopHUD from '../components/game/ExactTopHUD';
+import ExactGameBoard from '../components/game/ExactGameBoard';
+import ExactBottomControls from '../components/game/ExactBottomControls';
 
 const { width, height } = Dimensions.get('window');
 

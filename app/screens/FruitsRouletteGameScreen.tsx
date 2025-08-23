@@ -58,8 +58,6 @@ const FruitsRouletteGameScreen: React.FC = () => {
           isSpinning={isSpinning}
           result={result}
           onSpinComplete={handleSpinComplete}
-          timer={timer}
-          bets={bets}
         />
       </View>
 

@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Theme tokens used by tailwind.config.ts (HSL variables) */
+:root {
+  --background: 0 0% 2%;
+  --foreground: 0 0% 100%;
+
+  --primary: 0 100% 27%; /* casino deep red */
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 43 74% 49%; /* gold */
+  --secondary-foreground: 0 0% 12%;
+
+  --accent: 51 100% 50%;
+  --accent-foreground: 0 0% 12%;
+
+  --muted: 210 6% 10%;
+  --muted-foreground: 0 0% 80%;
+
+  --destructive: 348 83% 47%;
+  --destructive-foreground: 0 0% 100%;
+
+  --popover: 0 0% 6%;
+  --popover-foreground: 0 0% 98%;
+
+  --card: 0 0% 8%;
+  --card-foreground: 0 0% 98%;
+
+  --border: 43 74% 49%;
+  --input: 43 74% 49%;
+  --ring: 43 74% 49%;
+
+  /* Game specific */
+  --game-hud-bg: 210 6% 10%;
+  --game-board-bg: 223 37% 14%;
+  --oval-border: 43 74% 49%;
+  --oval-border-dark: 43 74% 35%;
+  --oval-interior: 210 6% 12%;
+  --timer-bg: 0 0% 0%;
+  --timer-text: 51 100% 50%;
+  --multiplier-text: 0 0% 100%;
+  --logo-blue: 223 85% 60%;
+  --coin-gold: 43 96% 56%;
+  --button-dark: 210 6% 10%;
+
+  --radius: 0.6rem;
+}
+
+.dark {
+  --background: 0 0% 2%;
+  --foreground: 0 0% 100%;
+}
+
+html, body, #root, #app {
+  height: 100%;
+}
+
+body {
+  @apply bg-background text-foreground;
+}

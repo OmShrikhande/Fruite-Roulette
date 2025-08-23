@@ -17,8 +17,8 @@ interface SpinningWheelProps {
   isSpinning: boolean;
   result?: number;
   onSpinComplete?: () => void;
-  timer: number;
-  bets: { [key: string]: number };
+  timer?: number;
+  bets?: { [key: string]: number };
 }
 
 // Exact fruit sequence and multipliers matching the description

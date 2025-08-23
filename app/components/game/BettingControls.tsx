@@ -1,387 +1,165 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, Dimensions, Alert } from 'react-native';
-import styled from 'styled-components/native';
-import { LinearGradient } from 'expo-linear-gradient';
-
-const { width } = Dimensions.get('window');
+import React from 'react';
 
 interface BettingControlsProps {
-  selectedChip: number;
-  onSelectChip: (value: number) => void;
-  onPlaceBet: (fruit: string, amount: number) => void;
-  selectedBets: { [key: string]: number };
   gamePhase: 'betting' | 'spinning' | 'result';
+  selectedChip: number;
   balance: number;
+  totalBets: number;
+  onChipSelect: (value: number) => void;
+  onFruitBet: (fruit: string) => void;
+  onSpin: () => void;
+  onNewGame: () => void;
 }
 
-// Exact fruit sequence from bottom scrollable row
-const SCROLLABLE_FRUITS = [
-  { emoji: '🍊', name: 'Orange' },
-  { emoji: '🥝', name: 'Kiwi' },
-  { emoji: '🍎', name: 'Apple' },
-  { emoji: '🍇', name: 'Grape' },
-  { emoji: '🍌', name: 'Banana' },
-];
-
-// Exact betting chips as shown
-const BETTING_CHIPS = [
-  { value: 10, label: '10', color: '#E8E8E8', textColor: '#000000', borderColor: '#CCCCCC' },
-  { value: 100, label: '100', color: '#FF8C00', textColor: '#FFFFFF', borderColor: '#FF6600' },
-  { value: 1000, label: '1K', color: '#4169E1', textColor: '#FFFFFF', borderColor: '#1E90FF' },
-  { value: 5000, label: '5K', color: '#32CD32', textColor: '#FFFFFF', borderColor: '#228B22' },
-  { value: 50000, label: '50K', color: '#DC143C', textColor: '#FFFFFF', borderColor: '#B22222' },
-];
-
-export const BettingControls: React.FC<BettingControlsProps> = ({
-  selectedChip,
-  onSelectChip,
-  onPlaceBet,
-  selectedBets,
+const BettingControls = ({
   gamePhase,
+  selectedChip,
   balance,
-}) => {
-  const [showBetSummary, setShowBetSummary] = useState(false);
+  totalBets,
+  onChipSelect,
+  onFruitBet,
+  onSpin,
+  onNewGame
+}: BettingControlsProps) => {
+  const fruits = ['🍊', '🍎', '🍇', '🍌', '🥝'];
+  
+  const chips = [
+    { value: 10, bg: 'bg-chip-10', text: 'text-chip-10-text', border: 'border-gray-400' },
+    { value: 100, bg: 'bg-chip-100', text: 'text-chip-100-text', border: 'border-orange-600' },
+    { value: 1000, bg: 'bg-chip-1k', text: 'text-chip-1k-text', border: 'border-blue-600' },
+    { value: 5000, bg: 'bg-chip-5k', text: 'text-chip-5k-text', border: 'border-green-600' },
+    { value: 50000, bg: 'bg-chip-50k', text: 'text-chip-50k-text', border: 'border-red-600' },
+  ];
 
-  const handleFruitBet = (fruit: string) => {
-    if (gamePhase !== 'betting') {
-      Alert.alert('Betting Closed', 'You can only place bets during the betting phase.');
-      return;
+  const getGamePhaseColor = () => {
+    switch (gamePhase) {
+      case 'betting': return 'bg-green-600';
+      case 'spinning': return 'bg-yellow-600';
+      case 'result': return 'bg-blue-600';
+      default: return 'bg-gray-600';
     }
-
-    if (selectedChip > balance) {
-      Alert.alert('Insufficient Balance', 'You don\'t have enough balance for this bet.');
-      return;
-    }
-
-    onPlaceBet(fruit, selectedChip);
   };
 
-  const getTotalBets = () => {
-    return Object.values(selectedBets).reduce((sum, bet) => sum + bet, 0);
-  };
-
-  const clearAllBets = () => {
-    if (gamePhase !== 'betting') return;
-    
-    Object.keys(selectedBets).forEach(fruit => {
-      onPlaceBet(fruit, -selectedBets[fruit]);
-    });
+  const getGamePhaseText = () => {
+    switch (gamePhase) {
+      case 'betting': return 'PLACE BETS';
+      case 'spinning': return 'SPINNING...';
+      case 'result': return 'GAME OVER';
+      default: return 'READY';
+    }
   };
 
   return (
-    <Container>
-      {/* Betting Summary Bar */}
-      <BettingSummaryBar>
-        <SummaryItem>
-          <SummaryLabel>Total Bets:</SummaryLabel>
-          <SummaryValue>${getTotalBets().toLocaleString()}</SummaryValue>
-        </SummaryItem>
-        <SummaryItem>
-          <SummaryLabel>Balance:</SummaryLabel>
-          <SummaryValue>${balance.toLocaleString()}</SummaryValue>
-        </SummaryItem>
-        {gamePhase === 'betting' && (
-          <ClearButton onPress={clearAllBets}>
-            <ClearButtonText>Clear All</ClearButtonText>
-          </ClearButton>
-        )}
-      </BettingSummaryBar>
+    <div className="bg-game-hud-bg p-4 border-t border-game-button-dark/50">
+      {/* Game Status Bar */}
+      <div className="flex items-center justify-between mb-3 p-2 bg-game-button-dark/50 rounded-lg">
+        <div className={`px-3 py-1 rounded-full text-white text-sm font-bold ${getGamePhaseColor()}`}>
+          {getGamePhaseText()}
+        </div>
+        <div className="text-white text-sm">
+          Balance: <span className="font-mono font-bold text-green-400">${balance.toLocaleString()}</span>
+        </div>
+        <div className="text-white text-sm">
+          Total Bets: <span className="font-mono font-bold text-yellow-400">${totalBets.toLocaleString()}</span>
+        </div>
+      </div>
 
-      {/* Top row: Fruit betting buttons */}
-      <TopRow>
-        <FruitBettingArea>
-          <ScrollView 
-            horizontal 
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ 
-              alignItems: 'center', 
-              paddingHorizontal: 8 
-            }}
+      {/* Fruit Betting Row */}
+      <div className="flex items-center justify-center gap-3 mb-4 p-3 bg-game-button-dark/30 rounded-lg">
+        <span className="text-white text-sm font-bold">Bet on:</span>
+        {fruits.map((fruit, index) => (
+          <button
+            key={index}
+            onClick={() => onFruitBet(fruit)}
+            disabled={gamePhase !== 'betting' || selectedChip > balance}
+            className={`
+              w-12 h-12 bg-black/40 rounded-full flex items-center justify-center 
+              transition-all duration-200 border-2 border-transparent
+              ${gamePhase === 'betting' && selectedChip <= balance 
+                ? 'hover:bg-yellow-400/20 hover:border-yellow-400 hover:scale-110' 
+                : 'opacity-50 cursor-not-allowed'
+              }
+            `}
           >
-            {SCROLLABLE_FRUITS.map((fruit, index) => {
-              const betAmount = selectedBets[fruit.emoji] || 0;
-              const isDisabled = gamePhase !== 'betting';
-              
-              return (
-                <FruitBetButton 
-                  key={index}
-                  onPress={() => handleFruitBet(fruit.emoji)}
-                  disabled={isDisabled}
-                  style={{
-                    opacity: isDisabled ? 0.6 : 1,
-                    borderColor: betAmount > 0 ? '#FFD700' : 'rgba(255, 255, 255, 0.3)',
-                    borderWidth: betAmount > 0 ? 3 : 1,
-                  }}
-                >
-                  <FruitEmoji>{fruit.emoji}</FruitEmoji>
-                  <FruitName>{fruit.name}</FruitName>
-                  {betAmount > 0 && (
-                    <BetAmountBadge>
-                      <BetAmountText>${betAmount}</BetAmountText>
-                    </BetAmountBadge>
-                  )}
-                </FruitBetButton>
-              );
-            })}
-          </ScrollView>
-        </FruitBettingArea>
-      </TopRow>
+            <span className="text-2xl">{fruit}</span>
+          </button>
+        ))}
+      </div>
 
-      {/* Bottom row: Chip selection and controls */}
-      <BottomRow>
-        {/* Quick bet buttons */}
-        <QuickBetSection>
-          <QuickBetButton 
-            onPress={() => onSelectChip(100)}
-            disabled={gamePhase !== 'betting'}
+      {/* Main Controls Row */}
+      <div className="flex items-center justify-between">
+        {/* Action Button */}
+        <button 
+          onClick={gamePhase === 'result' ? onNewGame : onSpin}
+          disabled={gamePhase === 'spinning'}
+          className={`
+            w-16 h-16 rounded-full flex items-center justify-center border-2 transition-all duration-200
+            ${gamePhase === 'result' 
+              ? 'bg-green-600 border-green-400 hover:bg-green-700' 
+              : 'border-blue-400 hover:bg-blue-600/20'
+            }
+            ${gamePhase === 'spinning' ? 'opacity-50 cursor-not-allowed animate-spin' : ''}
+          `}
+          style={{
+            background: gamePhase === 'result' 
+              ? 'linear-gradient(135deg, hsl(120 61% 34%), hsl(120 61% 24%))' 
+              : 'linear-gradient(135deg, hsl(225 73% 57%), hsl(225 73% 47%))'
+          }}
+        >
+          <span className="text-white text-2xl">
+            {gamePhase === 'result' ? '🔄' : gamePhase === 'spinning' ? '⏳' : '🎰'}
+          </span>
+        </button>
+
+        {/* Chip Selection */}
+        <div className="flex items-center gap-2">
+          {chips.map((chip, index) => (
+            <button
+              key={index}
+              onClick={() => onChipSelect(chip.value)}
+              disabled={gamePhase !== 'betting'}
+              className={`
+                w-12 h-12 ${chip.bg} ${chip.text} rounded-full flex items-center justify-center 
+                border-2 ${chip.border} font-bold text-sm transition-all duration-200
+                ${selectedChip === chip.value && gamePhase === 'betting'
+                  ? 'ring-4 ring-blue-400/50 shadow-lg shadow-blue-400/30 scale-110' 
+                  : gamePhase === 'betting' ? 'hover:scale-105' : 'opacity-50'
+                }
+                ${chip.value > balance ? 'opacity-30 cursor-not-allowed' : ''}
+              `}
+            >
+              {chip.value >= 1000 ? `${chip.value/1000}K` : chip.value}
+            </button>
+          ))}
+        </div>
+
+        {/* Quick Bet Options */}
+        <div className="flex flex-col gap-1">
+          <button
+            onClick={() => onChipSelect(Math.min(balance, 1000))}
+            disabled={gamePhase !== 'betting' || balance < 10}
+            className="px-3 py-1 bg-yellow-600 text-white text-xs font-bold rounded hover:bg-yellow-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <QuickBetText>Min</QuickBetText>
-          </QuickBetButton>
-          <QuickBetButton 
-            onPress={() => onSelectChip(balance)}
-            disabled={gamePhase !== 'betting'}
+            MAX
+          </button>
+          <button
+            onClick={() => onChipSelect(10)}
+            disabled={gamePhase !== 'betting' || balance < 10}
+            className="px-3 py-1 bg-gray-600 text-white text-xs font-bold rounded hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <QuickBetText>Max</QuickBetText>
-          </QuickBetButton>
-        </QuickBetSection>
+            MIN
+          </button>
+        </div>
+      </div>
 
-        {/* 5 poker chips */}
-        <ChipsArea>
-          {BETTING_CHIPS.map((chip) => {
-            const isSelected = selectedChip === chip.value;
-            const isDisabled = gamePhase !== 'betting' || chip.value > balance;
-            
-            return (
-              <ChipButton
-                key={chip.value}
-                onPress={() => onSelectChip(chip.value)}
-                disabled={isDisabled}
-                style={{
-                  shadowColor: isSelected ? chip.borderColor : '#000',
-                  shadowOpacity: isSelected ? 0.8 : 0.3,
-                  shadowRadius: isSelected ? 8 : 3,
-                  elevation: isSelected ? 8 : 3,
-                  opacity: isDisabled ? 0.5 : 1,
-                }}
-              >
-                <ChipGradient
-                  colors={[chip.color, chip.color]}
-                  style={{
-                    width: 50,
-                    height: 50,
-                    borderRadius: 25,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    borderWidth: isSelected ? 4 : 2,
-                    borderColor: isSelected ? '#FFD700' : chip.borderColor,
-                  }}
-                >
-                  <ChipLabel style={{ color: chip.textColor }}>
-                    {chip.label}
-                  </ChipLabel>
-                  {isSelected && (
-                    <SelectedIndicator>
-                      <SelectedText>✓</SelectedText>
-                    </SelectedIndicator>
-                  )}
-                </ChipGradient>
-              </ChipButton>
-            );
-          })}
-        </ChipsArea>
-
-        {/* Game status indicator */}
-        <StatusSection>
-          <StatusIndicator gamePhase={gamePhase}>
-            {gamePhase === 'betting' && <StatusText>🎯 BETTING</StatusText>}
-            {gamePhase === 'spinning' && <StatusText>🎰 SPINNING</StatusText>}
-            {gamePhase === 'result' && <StatusText>🏆 RESULT</StatusText>}
-          </StatusIndicator>
-        </StatusSection>
-      </BottomRow>
-    </Container>
+      {/* Balance Warning */}
+      {balance < selectedChip && gamePhase === 'betting' && (
+        <div className="mt-2 p-2 bg-red-600/20 border border-red-600/50 rounded text-red-400 text-sm text-center">
+          Insufficient balance for selected chip value
+        </div>
+      )}
+    </div>
   );
 };
 
-const Container = styled.View`
-  background-color: #1a3a52;
-  padding: 12px;
-  border-top-width: 2px;
-  border-top-color: #FFD700;
-`;
-
-const BettingSummaryBar = styled.View`
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.6);
-  padding: 8px 16px;
-  border-radius: 20px;
-  margin-bottom: 12px;
-  border: 1px solid #FFD700;
-`;
-
-const SummaryItem = styled.View`
-  flex-direction: row;
-  align-items: center;
-`;
-
-const SummaryLabel = styled.Text`
-  color: #FFFFFF;
-  font-size: 12px;
-  margin-right: 4px;
-`;
-
-const SummaryValue = styled.Text`
-  color: #FFD700;
-  font-size: 14px;
-  font-weight: bold;
-  font-family: monospace;
-`;
-
-const ClearButton = styled.TouchableOpacity`
-  background-color: #FF4444;
-  padding: 6px 12px;
-  border-radius: 12px;
-`;
-
-const ClearButtonText = styled.Text`
-  color: #FFFFFF;
-  font-size: 12px;
-  font-weight: bold;
-`;
-
-const TopRow = styled.View`
-  margin-bottom: 12px;
-`;
-
-const FruitBettingArea = styled.View`
-  height: 80px;
-`;
-
-const FruitBetButton = styled.TouchableOpacity`
-  width: 70px;
-  height: 70px;
-  justify-content: center;
-  align-items: center;
-  margin-horizontal: 6px;
-  background-color: rgba(0, 0, 0, 0.4);
-  border-radius: 35px;
-  position: relative;
-`;
-
-const FruitEmoji = styled.Text`
-  font-size: 28px;
-  margin-bottom: 2px;
-`;
-
-const FruitName = styled.Text`
-  color: #FFFFFF;
-  font-size: 10px;
-  font-weight: bold;
-`;
-
-const BetAmountBadge = styled.View`
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  background-color: #FFD700;
-  border-radius: 10px;
-  padding: 2px 6px;
-`;
-
-const BetAmountText = styled.Text`
-  color: #000000;
-  font-size: 8px;
-  font-weight: bold;
-`;
-
-const BottomRow = styled.View`
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-const QuickBetSection = styled.View`
-  flex-direction: column;
-  gap: 4px;
-`;
-
-const QuickBetButton = styled.TouchableOpacity`
-  background-color: rgba(30, 60, 90, 0.8);
-  padding: 6px 12px;
-  border-radius: 8px;
-  border: 1px solid rgba(100, 150, 200, 0.4);
-`;
-
-const QuickBetText = styled.Text`
-  color: #FFFFFF;
-  font-size: 10px;
-  font-weight: bold;
-`;
-
-const ChipsArea = styled.View`
-  flex-direction: row;
-  flex: 1;
-  justify-content: center;
-  align-items: center;
-  gap: 6px;
-  margin-horizontal: 12px;
-`;
-
-const ChipButton = styled.TouchableOpacity`
-  shadow-offset: 0px 2px;
-  position: relative;
-`;
-
-const ChipGradient = styled(LinearGradient)`
-  position: relative;
-`;
-
-const ChipLabel = styled.Text`
-  font-size: 12px;
-  font-weight: bold;
-  font-family: monospace;
-  text-shadow-offset: 1px 1px;
-  text-shadow-radius: 1px;
-`;
-
-const SelectedIndicator = styled.View`
-  position: absolute;
-  top: -8px;
-  right: -8px;
-  width: 20px;
-  height: 20px;
-  background-color: #00FF00;
-  border-radius: 10px;
-  justify-content: center;
-  align-items: center;
-  border: 2px solid #FFFFFF;
-`;
-
-const SelectedText = styled.Text`
-  color: #FFFFFF;
-  font-size: 10px;
-  font-weight: bold;
-`;
-
-const StatusSection = styled.View`
-  align-items: center;
-`;
-
-const StatusIndicator = styled.View<{ gamePhase: string }>`
-  background-color: ${props => 
-    props.gamePhase === 'betting' ? '#00AA00' :
-    props.gamePhase === 'spinning' ? '#FF8C00' : '#FFD700'
-  };
-  padding: 8px 12px;
-  border-radius: 20px;
-  border: 2px solid #FFFFFF;
-`;
-
-const StatusText = styled.Text`
-  color: #FFFFFF;
-  font-size: 12px;
-  font-weight: bold;
-  font-family: monospace;
-`;
+export default BettingControls;
